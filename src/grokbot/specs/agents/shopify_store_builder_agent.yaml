@@ -1,0 +1,28 @@
+id: shopify_store_builder_agent
+name: Shopify Store Builder Agent
+version: 0.1.0
+role: Shopify Store Builder Agent
+division: shared
+status: planned
+description: >-
+  Assembles a Shopify store configuration (theme, products, pages) from upstream
+  agent outputs. Building and especially LAUNCHING a store is an external,
+  material action and therefore requires human owner approval. No production
+  Shopify connection exists in this phase.
+default_permission: APPROVAL_REQUIRED
+capabilities:
+  - store_configuration_draft
+  - product_listing_assembly
+  - launch_preparation
+inputs:
+  - { name: brand_package, type: object, required: true }
+  - { name: product_listings, type: array, required: true }
+outputs:
+  - { name: store_config, type: object, description: "Proposed store configuration (draft, not deployed)." }
+  - { name: launch_checklist, type: array, description: "Pre-launch checklist for owner review." }
+consumes_from: [product_validation_agent, compliance_ip_screening_agent]
+evidence_requirements:
+  - "Store config must reference the approved inputs it was assembled from."
+escalation_triggers:
+  - "Any pre-launch checklist item cannot be satisfied."
+tags: [shopify, build, approval_required]

@@ -1,0 +1,27 @@
+id: product_validation_agent
+name: Product Validation Agent
+version: 0.1.0
+role: Product Validation Agent
+division: us_dropshipping
+status: draft
+description: >-
+  Validates whether a candidate product has demonstrated consumer demand and a
+  defensible position, consuming market research outputs. Flags weak evidence
+  and recommends additional research rather than asserting unproven demand.
+default_permission: AUTONOMOUS
+capabilities:
+  - demand_validation
+  - competition_assessment
+  - risk_flagging
+inputs:
+  - { name: market_summary, type: object, required: true }
+  - { name: demand_signals, type: array, required: true }
+outputs:
+  - { name: validation_verdict, type: object, description: "pass / fail / insufficient_evidence with rationale." }
+  - { name: evidence_gaps, type: array, description: "Named gaps requiring more research." }
+consumes_from: [market_research_agent]
+evidence_requirements:
+  - "A 'pass' verdict requires sourced demand evidence; otherwise verdict is insufficient_evidence."
+escalation_triggers:
+  - "Verdict is borderline or evidence is contradictory."
+tags: [validation, us_dropshipping]

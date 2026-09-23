@@ -1,0 +1,27 @@
+id: compliance_ip_screening_agent
+name: Compliance / IP Screening Agent
+version: 0.1.0
+role: Compliance / IP Screening Agent
+division: shared
+status: planned
+description: >-
+  Screens concepts, designs, and copy for potential intellectual-property and
+  compliance risks. Produces risk findings with sources. Does not render legal
+  conclusions; it flags risk and escalates uncertainty to the human owner.
+default_permission: AUTONOMOUS
+capabilities:
+  - trademark_risk_flagging
+  - copyright_risk_flagging
+  - restricted_category_screening
+inputs:
+  - { name: artifact, type: object, required: true, description: "Concept, design, or copy to screen." }
+outputs:
+  - { name: risk_findings, type: array, description: "Potential IP/compliance risks with sources." }
+  - { name: recommendation, type: string, description: "clear / review / escalate." }
+consumes_from: []
+evidence_requirements:
+  - "Risk findings must reference the basis for the flag; legal conclusions are never asserted."
+escalation_triggers:
+  - "Any material IP or compliance risk is detected."
+  - "Screening cannot reach a confident 'clear' result."
+tags: [compliance, ip, shared]
