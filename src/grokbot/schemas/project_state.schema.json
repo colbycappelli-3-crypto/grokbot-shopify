@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokbot.commerce/schemas/project_state.schema.json",
+  "title": "GROKBOT Project / Store State",
+  "description": "Persistent, auditable state for a single project/store as it moves through workflow stages and gates.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["project_id", "name", "division", "status", "stages"],
+  "properties": {
+    "project_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
+    "name": { "type": "string", "minLength": 1 },
+    "division": {
+      "type": "string",
+      "enum": ["shared", "print_on_demand", "us_dropshipping", "digital_services"]
+    },
+    "workflow_id": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": [
+        "proposed",
+        "researching",
+        "validating",
+        "awaiting_approval",
+        "approved",
+        "on_hold",
+        "rejected",
+        "launched",
+        "archived"
+      ]
+    },
+    "created_at": { "type": "string" },
+    "updated_at": { "type": "string" },
+    "stages": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/stage_state" }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/evidence_item" },
+      "default": {}
+    },
+    "decisions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/decision" },
+      "default": []
+    },
+    "approvals": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/approval_record" },
+      "default": []
+    },
+    "escalations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/escalation" },
+      "default": []
+    }
+  },
+  "$defs": {
+    "stage_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stage_id", "status"],
+      "properties": {
+        "stage_id": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "in_progress",
+            "passed",
+            "failed",
+            "blocked",
+            "awaiting_approval",
+            "skipped"
+          ]
+        },
+        "updated_at": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "evidence_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["UNKNOWN", "unverified", "verified"],
+          "description": "Findings default to UNKNOWN and may only become 'verified' when sources are present."
+        },
+        "value": {},
+        "sources": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": []
+        },
+        "updated_at": { "type": "string" }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["timestamp", "actor", "summary"],
+      "properties": {
+        "timestamp": { "type": "string" },
+        "actor": { "type": "string" },
+        "summary": { "type": "string", "minLength": 1 },
+        "rationale": { "type": "string" },
+        "references": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": []
+        }
+      }
+    },
+    "approval_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "action_class", "status"],
+      "properties": {
+        "action": { "type": "string" },
+        "action_class": {
+          "type": "string",
+          "enum": ["AUTONOMOUS", "APPROVAL_REQUIRED", "PROHIBITED"]
+        },
+        "status": { "type": "string", "enum": ["pending", "approved", "denied"] },
+        "approver": { "type": "string" },
+        "timestamp": { "type": "string" }
+      }
+    },
+    "escalation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["timestamp", "reason"],
+      "properties": {
+        "timestamp": { "type": "string" },
+        "reason": { "type": "string", "minLength": 1 },
+        "status": {
+          "type": "string",
+          "enum": ["open", "acknowledged", "resolved"],
+          "default": "open"
+        }
+      }
+    }
+  }
+}
