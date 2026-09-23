@@ -1,0 +1,43 @@
+# ---- Secrets & environment (NEVER commit real credentials) ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+credentials/
+*.secret
+*.credentials.json
+service-account*.json
+
+# ---- Local runtime / data ----
+*.db
+*.sqlite
+*.sqlite3
+local_*.db
+data/local/
+.grokbot_state/
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ---- Editors / OS ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

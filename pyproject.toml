@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "grokbot-commerce"
+version = "0.1.0"
+description = "GROKBOT COMMERCE — master orchestrator foundation for an autonomous multi-agent commerce platform."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Proprietary" }
+authors = [{ name = "GROKBOT COMMERCE" }]
+dependencies = [
+  "PyYAML>=6.0",
+  "jsonschema>=4.18",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+
+[project.scripts]
+grokbot = "grokbot.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+grokbot = ["schemas/*.json", "specs/agents/*.yaml", "specs/workflows/*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
