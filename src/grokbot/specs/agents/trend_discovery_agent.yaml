@@ -1,0 +1,30 @@
+id: trend_discovery_agent
+name: Trend Discovery Agent
+version: 0.2.0
+role: Trend Discovery Agent
+division: shared
+status: active
+description: >-
+  Identifies candidate niches, themes, product categories, or demand signals
+  for further investigation. A candidate is not a successful opportunity.
+  Phase 2 reads only supplied TEST/MOCK packets and does not declare success
+  because something appears trendy.
+default_permission: AUTONOMOUS
+capabilities:
+  - candidate_identification
+  - evidence_requirement_listing
+inputs:
+  - { name: objective, type: string, required: true, description: "Business objective to explore." }
+  - { name: fixture, type: object, required: false, description: "TEST/MOCK packet. Not a live data source." }
+outputs:
+  - { name: candidate_opportunities, type: array, description: "Candidates with epistemic status. Never a success declaration." }
+  - { name: evidence_requirements, type: array, description: "What later research must still establish." }
+  - { name: unknowns, type: array }
+  - { name: recommended_research, type: array }
+consumes_from: []
+evidence_requirements:
+  - "Candidates copied from a packet keep the packet's epistemic status."
+  - "Unsupported statements stay UNKNOWN."
+escalation_triggers:
+  - "No candidate was supplied and the objective cannot be made specific."
+tags: [research, shared, phase2]

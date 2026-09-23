@@ -26,7 +26,8 @@ Rules:
 5. **Escalation.** List `escalation_triggers` for conditions that must go to the
    human owner (insufficient evidence, disputes, refunds, IP risk, anomalies).
 6. **Lifecycle.** Use `status`: `planned` (no behavior yet), `draft`, `active`,
-   `deprecated`. Foundation-phase agents are `planned` or `draft`.
+   `deprecated`. Agents with an offline Phase 2 runtime are `active`. Agents
+   that would take external action stay `planned` until a later approved phase.
 
 ## Workflow specification standards
 
@@ -56,6 +57,10 @@ Rules:
 - Attach sources to any claim where practical. Represent unverified values as
   `UNKNOWN` in project state (`ProjectState.record_evidence` enforces that
   `verified` requires a source).
+- Label each claim `FACT`, `INFERENCE`, `ASSUMPTION`, or `UNKNOWN`. A `FACT`
+  requires verified evidence. TEST/MOCK support must stay marked TEST/MOCK.
+  The orchestrator downgrades an unsupported `FACT` to `UNKNOWN` before the
+  next agent reads it.
 - Never assert legal conclusions, completed external actions, or fabricated
   figures.
 

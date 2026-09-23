@@ -1,13 +1,10 @@
-"""GROKBOT master orchestrator (planning only).
+"""GROKBOT master orchestrator.
 
-The orchestrator turns a business objective plus a workflow specification into
-an ordered, dependency-aware plan. For every stage it resolves the responsible
-agent, classifies the approval requirement, and surfaces validation/approval
-gates.
-
-Scope guard for this phase: the orchestrator performs NO external actions,
-connects to NO production services, and starts NO autonomous processes. It
-operates purely on in-memory specifications and state.
+``plan`` remains the dependency-ordered planning view from Phase 1. Offline
+execution of a workflow lives in ``WorkflowRunner`` and is reached through
+``open_opportunity`` / ``run_opportunity``. Execution reads specs and TEST/MOCK
+fixtures only. It does not contact external services or perform consequential
+actions.
 """
 from __future__ import annotations
 
@@ -137,6 +134,18 @@ class Orchestrator:
             tasks=tasks,
             warnings=warnings,
         )
+
+    def execution_runner(self):
+        """Return the offline runner that executes workflows for this orchestrator."""
+        from .engine import WorkflowRunner
+
+        return WorkflowRunner(self.registry, self.policy, list(self.workflows.values()))
+
+    def open_opportunity(self, objective: str, **kwargs):
+        return self.execution_runner().open_opportunity(objective, **kwargs)
+
+    def run_opportunity(self, run, faults=None):
+        return self.execution_runner().run(run, faults=faults)
 
     def new_project(self, project_id: str, name: str, workflow: WorkflowRef) -> ProjectState:
         workflow = self._resolve(workflow)

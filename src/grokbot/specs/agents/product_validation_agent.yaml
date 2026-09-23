@@ -1,13 +1,14 @@
 id: product_validation_agent
 name: Product Validation Agent
-version: 0.1.0
+version: 0.2.0
 role: Product Validation Agent
-division: us_dropshipping
-status: draft
+division: shared
+status: active
 description: >-
-  Validates whether a candidate product has demonstrated consumer demand and a
-  defensible position, consuming market research outputs. Flags weak evidence
-  and recommends additional research rather than asserting unproven demand.
+  Evaluates whether supplied evidence satisfies explicit opportunity criteria.
+  Returns VALIDATE, RESEARCH_FURTHER, or REJECT from those rules. Used by both
+  print-on-demand and US dropshipping discovery. Does not treat UNKNOWN as
+  verified demand.
 default_permission: AUTONOMOUS
 capabilities:
   - demand_validation
@@ -17,11 +18,14 @@ inputs:
   - { name: market_summary, type: object, required: true }
   - { name: demand_signals, type: array, required: true }
 outputs:
+  - { name: validation_outcome, type: string, description: "VALIDATE, RESEARCH_FURTHER, or REJECT." }
   - { name: validation_verdict, type: object, description: "pass / fail / insufficient_evidence with rationale." }
+  - { name: failed_criteria, type: array, description: "Machine-readable criteria that failed." }
   - { name: evidence_gaps, type: array, description: "Named gaps requiring more research." }
 consumes_from: [market_research_agent]
 evidence_requirements:
-  - "A 'pass' verdict requires sourced demand evidence; otherwise verdict is insufficient_evidence."
+  - "VALIDATE requires the configured minimum of FACT demand signals with evidence."
+  - "A verified statement that demand is absent yields REJECT, not a guess."
 escalation_triggers:
-  - "Verdict is borderline or evidence is contradictory."
-tags: [validation, us_dropshipping]
+  - "Verdict is RESEARCH_FURTHER or evidence is contradictory."
+tags: [validation, shared, phase2]

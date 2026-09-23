@@ -1,0 +1,80 @@
+fixture_id: research_further
+data_classification: TEST_MOCK
+banner: "TEST/MOCK DATA — fabricated for offline simulation. Not real market, supplier, sales, customer, or pricing information."
+workflow_id: pod_opportunity_discovery
+division: print_on_demand
+objective: "Evaluate a TEST/MOCK niche that lacks demand evidence and must be researched further."
+business_model: print_on_demand
+niche_hypothesis: "TEST/MOCK niche: unfinished ceramic-pin concept with no demand packet."
+candidates:
+  - candidate_id: cand-unfinished-pin
+    theme: "Unfinished ceramic pin"
+    category: print_on_demand_accessory
+    epistemic_status: UNKNOWN
+    evidence_ids: []
+    statement: "TEST/MOCK candidate with no demand evidence attached."
+    unknowns:
+      - "Demand for this candidate is UNKNOWN."
+    recommended_research:
+      - "Supply verified demand evidence before validation."
+market:
+  demand_present: null
+  demand_present_epistemic_status: UNKNOWN
+  demand_present_evidence_ids: []
+  demand_signals:
+    - claim_id: demand-missing
+      field: demand
+      statement: "Demand evidence was not included in the TEST/MOCK packet."
+      epistemic_status: UNKNOWN
+      evidence_ids: []
+  target_customer:
+    claim_id: customer-1
+    field: target_customer
+    statement: "TEST/MOCK hypothesis: hobby buyers. Not a verified study."
+    epistemic_status: INFERENCE
+    evidence_ids: []
+  competition:
+    claim_id: competition-missing
+    field: competition
+    statement: "Competitive context was not supplied."
+    epistemic_status: UNKNOWN
+    evidence_ids: []
+  pricing_context:
+    claim_id: pricing-missing
+    field: pricing_context
+    statement: "Pricing context was not supplied."
+    epistemic_status: UNKNOWN
+    evidence_ids: []
+  seasonality:
+    claim_id: seasonality-missing
+    field: seasonality
+    statement: "Seasonality was not supplied."
+    epistemic_status: UNKNOWN
+    evidence_ids: []
+  market_risks: []
+economics:
+  currency: null
+  selling_price: null
+  product_cost: null
+  shipping: null
+  platform_fees: null
+  payment_fees: null
+  fulfillment_cost: null
+  fixed_costs: null
+compliance:
+  trademark_risk: UNKNOWN
+  copyright_risk: UNKNOWN
+  prohibited_product_risk: UNKNOWN
+  deceptive_marketing_risk: UNKNOWN
+  platform_policy_risk: UNKNOWN
+  findings: []
+supplier:
+  applicable: false
+  us_fulfillment_evidence_status: unknown
+  statement: "TEST/MOCK: supplier evidence is not part of this incomplete packet."
+  epistemic_status: UNKNOWN
+  evidence_ids: []
+  candidate_suppliers: []
+  commitment_made: false
+assumptions: []
+evidence: []

@@ -22,9 +22,11 @@ organized into three business divisions that share common infrastructure:
 
 ## 2. Core architecture
 
-**GROKBOT is the master orchestrator.** It coordinates specialized agents but is
-not, in this phase, a set of always-on autonomous processes. Agents are
-declarative **specifications** first; runtime implementations are attached later.
+**GROKBOT is the master orchestrator.** It coordinates specialized agents. Agents
+remain declarative specifications. Phase 2 attaches offline logical runtimes for
+the commerce-intelligence roles. Those runtimes are explicit functions over
+supplied inputs. They are not self-modifying processes and they do not call
+external services.
 
 Logical agent roles the system is designed to support (added incrementally):
 Market Research, Trend Discovery, Product Validation, Supplier Research, Unit
@@ -43,8 +45,9 @@ improved, or replaced without rebuilding the system**:
 - **Project/store state** is validated data (schema: `project_state.schema.json`)
   that records progress, evidence, decisions, approvals, and escalations.
 - **The orchestrator** (`grokbot.orchestrator`) turns an objective + workflow
-  into a dependency-ordered plan, resolves agents, and surfaces gates. It performs
-  no external actions in this phase.
+  into a dependency-ordered plan, and can run that plan offline. It creates
+  jobs, passes structured outputs, evaluates gates, writes an audit log, and
+  stops at human review. It performs no external actions.
 
 See [`ARCHITECTURE.md`](ARCHITECTURE.md) for how the divisions share
 infrastructure.
@@ -118,10 +121,14 @@ particular, do not interact with any PoH Wallet project or repository.
 
 ## 8. Phase discipline
 
-This is the **foundation and control-system** phase. Do NOT build the Shopify
-store, install Shopify integrations, connect external accounts, create all
-specialized agents, make purchases, deploy anything, or add real credentials.
-Do not proceed to the next phase without human approval.
+Phase 1 (foundation and control system) is merged. Phase 2 is the **offline
+orchestration and commerce-intelligence** layer: job handoffs, evidence,
+validation gates, dossiers, and two discovery workflows that stop at human
+review.
+
+Do NOT connect Shopify, Fiverr, suppliers, or payment systems. Do NOT purchase,
+publish, advertise, or message customers. Do NOT add real credentials. Do NOT
+start Phase 3 without explicit human approval.
 
 ## 9. Standards for adding an agent or workflow
 

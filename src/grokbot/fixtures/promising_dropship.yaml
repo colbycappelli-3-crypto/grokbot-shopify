@@ -1,0 +1,114 @@
+fixture_id: promising_dropship
+data_classification: TEST_MOCK
+banner: "TEST/MOCK DATA — fabricated for offline simulation. Not real market, supplier, sales, customer, or pricing information."
+workflow_id: us_dropshipping_opportunity_discovery
+division: us_dropshipping
+objective: "Evaluate a TEST/MOCK US dropshipping niche with mock fulfillment evidence and stop for human review."
+business_model: us_dropshipping
+niche_hypothesis: "TEST/MOCK niche: desk cable clip with mock US fulfillment evidence."
+candidates:
+  - candidate_id: cand-cable-clip-verified
+    theme: "Desk cable clip"
+    category: dropship_accessory
+    epistemic_status: INFERENCE
+    evidence_ids: []
+    statement: "TEST/MOCK candidate. Mock fulfillment evidence is not a live supplier relationship."
+    unknowns:
+      - "Real supplier reliability is UNKNOWN outside this packet."
+    recommended_research:
+      - "Keep the supplier labeled TEST/MOCK and do not contact anyone."
+market:
+  demand_present: true
+  demand_present_epistemic_status: FACT
+  demand_present_evidence_ids: [ev-drop-demand-1]
+  demand_signals:
+    - claim_id: demand-drop-1
+      field: demand
+      statement: "TEST/MOCK packet includes one verified mock demand signal for the cable clip."
+      epistemic_status: FACT
+      evidence_ids: [ev-drop-demand-1]
+  target_customer:
+    claim_id: customer-drop-1
+    field: target_customer
+    statement: "TEST/MOCK hypothesis: home-office buyers. Not a verified customer study."
+    epistemic_status: INFERENCE
+    evidence_ids: []
+  competition:
+    claim_id: competition-drop-1
+    field: competition
+    statement: "TEST/MOCK competitive context: other clip concepts exist in the packet."
+    epistemic_status: INFERENCE
+    evidence_ids: []
+  pricing_context:
+    claim_id: pricing-drop-1
+    field: pricing_context
+    statement: "TEST/MOCK scenario price is a supplied input, not an observed market price."
+    epistemic_status: FACT
+    evidence_ids: [ev-drop-price-1]
+  seasonality:
+    claim_id: seasonality-drop-1
+    field: seasonality
+    statement: "Seasonality was not supplied."
+    epistemic_status: UNKNOWN
+    evidence_ids: []
+  market_risks: []
+economics:
+  currency: USD
+  selling_price: 32.0
+  product_cost: 10.0
+  shipping: 3.0
+  platform_fees: 1.5
+  payment_fees: 1.2
+  fulfillment_cost: 2.0
+  fixed_costs: null
+compliance:
+  trademark_risk: clear
+  copyright_risk: clear
+  prohibited_product_risk: clear
+  deceptive_marketing_risk: clear
+  platform_policy_risk: clear
+  findings: []
+supplier:
+  applicable: true
+  us_fulfillment_evidence_status: verified
+  statement: "TEST/MOCK supplier record says a fictional warehouse is in the US. No supplier was contacted."
+  epistemic_status: FACT
+  evidence_ids: [ev-drop-supplier-1]
+  candidate_suppliers:
+    - supplier_id: mock-supplier-alpha
+      display_name: "MOCK Supplier Alpha"
+      us_fulfillment: true
+      epistemic_status: FACT
+      evidence_ids: [ev-drop-supplier-1]
+      notes: "TEST/MOCK DATA. Not a real supplier. No order was placed."
+  commitment_made: false
+assumptions:
+  - "TEST/MOCK assumption: the scenario costs are supplied inputs, not supplier quotes."
+evidence:
+  - evidence_id: ev-drop-demand-1
+    source_type: mock
+    source_reference: "MOCK:fixture/promising_dropship#demand"
+    retrieved_at: null
+    claim_supported: "TEST/MOCK demand signal for promising_dropship."
+    collected_by: fixture_loader
+    verification_status: verified
+    freshness: static-test-fixture
+    notes: "TEST/MOCK DATA. Not a real market measurement."
+  - evidence_id: ev-drop-price-1
+    source_type: mock
+    source_reference: "MOCK:fixture/promising_dropship#price"
+    retrieved_at: null
+    claim_supported: "TEST/MOCK supplied scenario price for promising_dropship."
+    collected_by: fixture_loader
+    verification_status: verified
+    freshness: static-test-fixture
+    notes: "TEST/MOCK DATA. Not an observed market price."
+  - evidence_id: ev-drop-supplier-1
+    source_type: mock
+    source_reference: "MOCK:fixture/promising_dropship#supplier"
+    retrieved_at: null
+    claim_supported: "TEST/MOCK US fulfillment flag for MOCK Supplier Alpha."
+    collected_by: fixture_loader
+    verification_status: verified
+    freshness: static-test-fixture
+    notes: "TEST/MOCK DATA. Not a real supplier record."

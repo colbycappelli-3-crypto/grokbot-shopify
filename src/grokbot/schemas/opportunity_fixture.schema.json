@@ -1,0 +1,238 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokbot.commerce/schemas/opportunity_fixture.schema.json",
+  "title": "GROKBOT Opportunity Fixture",
+  "description": "Offline TEST/MOCK packet consumed by Phase 2 simulations. Not real market data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "fixture_id",
+    "data_classification",
+    "banner",
+    "workflow_id",
+    "division",
+    "objective",
+    "business_model",
+    "niche_hypothesis",
+    "candidates",
+    "market",
+    "economics",
+    "compliance",
+    "supplier",
+    "assumptions",
+    "evidence"
+  ],
+  "properties": {
+    "fixture_id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*$" },
+    "data_classification": { "type": "string", "const": "TEST_MOCK" },
+    "banner": { "type": "string", "pattern": ".*(TEST|MOCK).*" },
+    "workflow_id": { "type": "string", "minLength": 1 },
+    "division": {
+      "type": "string",
+      "enum": ["shared", "print_on_demand", "us_dropshipping", "digital_services"]
+    },
+    "objective": { "type": "string", "minLength": 1 },
+    "business_model": { "type": "string", "minLength": 1 },
+    "niche_hypothesis": { "type": "string", "minLength": 1 },
+    "candidates": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/candidate" }
+    },
+    "market": { "$ref": "#/$defs/market" },
+    "economics": { "$ref": "#/$defs/economics" },
+    "compliance": { "$ref": "#/$defs/compliance" },
+    "supplier": { "$ref": "#/$defs/supplier" },
+    "assumptions": { "type": "array", "items": { "type": "string" } },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/evidence" }
+    }
+  },
+  "$defs": {
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "theme",
+        "category",
+        "epistemic_status",
+        "evidence_ids",
+        "statement",
+        "unknowns",
+        "recommended_research"
+      ],
+      "properties": {
+        "candidate_id": { "type": "string" },
+        "theme": { "type": "string" },
+        "category": { "type": "string" },
+        "epistemic_status": { "type": "string", "enum": ["FACT", "INFERENCE", "ASSUMPTION", "UNKNOWN"] },
+        "evidence_ids": { "type": "array", "items": { "type": "string" } },
+        "statement": { "type": "string" },
+        "unknowns": { "type": "array", "items": { "type": "string" } },
+        "recommended_research": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim_id", "field", "statement", "epistemic_status", "evidence_ids"],
+      "properties": {
+        "claim_id": { "type": "string" },
+        "field": { "type": "string" },
+        "statement": { "type": "string" },
+        "epistemic_status": { "type": "string", "enum": ["FACT", "INFERENCE", "ASSUMPTION", "UNKNOWN"] },
+        "evidence_ids": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "string" }
+      }
+    },
+    "market": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "demand_present",
+        "demand_present_epistemic_status",
+        "demand_present_evidence_ids",
+        "demand_signals",
+        "target_customer",
+        "competition",
+        "pricing_context",
+        "seasonality",
+        "market_risks"
+      ],
+      "properties": {
+        "demand_present": { "type": ["boolean", "null"] },
+        "demand_present_epistemic_status": { "type": "string", "enum": ["FACT", "INFERENCE", "ASSUMPTION", "UNKNOWN"] },
+        "demand_present_evidence_ids": { "type": "array", "items": { "type": "string" } },
+        "demand_signals": { "type": "array", "items": { "$ref": "#/$defs/claim" } },
+        "target_customer": { "$ref": "#/$defs/claim" },
+        "competition": { "$ref": "#/$defs/claim" },
+        "pricing_context": { "$ref": "#/$defs/claim" },
+        "seasonality": { "$ref": "#/$defs/claim" },
+        "market_risks": { "type": "array", "items": { "$ref": "#/$defs/claim" } }
+      }
+    },
+    "economics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "selling_price",
+        "product_cost",
+        "shipping",
+        "platform_fees",
+        "payment_fees",
+        "fulfillment_cost",
+        "fixed_costs"
+      ],
+      "properties": {
+        "currency": { "type": ["string", "null"] },
+        "selling_price": { "type": ["number", "null"] },
+        "product_cost": { "type": ["number", "null"] },
+        "shipping": { "type": ["number", "null"] },
+        "platform_fees": { "type": ["number", "null"] },
+        "payment_fees": { "type": ["number", "null"] },
+        "fulfillment_cost": { "type": ["number", "null"] },
+        "fixed_costs": { "type": ["number", "null"] }
+      }
+    },
+    "compliance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trademark_risk",
+        "copyright_risk",
+        "prohibited_product_risk",
+        "deceptive_marketing_risk",
+        "platform_policy_risk",
+        "findings"
+      ],
+      "properties": {
+        "trademark_risk": { "type": "string", "enum": ["clear", "unresolved", "confirmed", "UNKNOWN"] },
+        "copyright_risk": { "type": "string", "enum": ["clear", "unresolved", "confirmed", "UNKNOWN"] },
+        "prohibited_product_risk": { "type": "string", "enum": ["clear", "unresolved", "confirmed", "UNKNOWN"] },
+        "deceptive_marketing_risk": { "type": "string", "enum": ["clear", "unresolved", "confirmed", "UNKNOWN"] },
+        "platform_policy_risk": { "type": "string", "enum": ["clear", "unresolved", "confirmed", "UNKNOWN"] },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["risk_type", "status", "statement", "epistemic_status", "evidence_ids"],
+            "properties": {
+              "risk_type": { "type": "string" },
+              "status": { "type": "string" },
+              "statement": { "type": "string" },
+              "epistemic_status": { "type": "string", "enum": ["FACT", "INFERENCE", "ASSUMPTION", "UNKNOWN"] },
+              "evidence_ids": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "supplier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicable",
+        "us_fulfillment_evidence_status",
+        "statement",
+        "epistemic_status",
+        "evidence_ids",
+        "candidate_suppliers",
+        "commitment_made"
+      ],
+      "properties": {
+        "applicable": { "type": "boolean" },
+        "us_fulfillment_evidence_status": {
+          "type": "string",
+          "enum": ["verified", "unverified", "unknown"]
+        },
+        "statement": { "type": "string" },
+        "epistemic_status": { "type": "string", "enum": ["FACT", "INFERENCE", "ASSUMPTION", "UNKNOWN"] },
+        "evidence_ids": { "type": "array", "items": { "type": "string" } },
+        "candidate_suppliers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["supplier_id", "display_name", "us_fulfillment", "epistemic_status", "evidence_ids", "notes"],
+            "properties": {
+              "supplier_id": { "type": "string" },
+              "display_name": { "type": "string" },
+              "us_fulfillment": { "type": ["boolean", "null"] },
+              "epistemic_status": { "type": "string", "enum": ["FACT", "INFERENCE", "ASSUMPTION", "UNKNOWN"] },
+              "evidence_ids": { "type": "array", "items": { "type": "string" } },
+              "notes": { "type": "string" }
+            }
+          }
+        },
+        "commitment_made": { "type": "boolean" }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_id",
+        "source_type",
+        "source_reference",
+        "claim_supported",
+        "collected_by",
+        "verification_status",
+        "notes"
+      ],
+      "properties": {
+        "evidence_id": { "type": "string" },
+        "source_type": { "type": "string", "enum": ["mock", "test"] },
+        "source_reference": { "type": "string", "pattern": "^(?!https?://).*(MOCK|TEST).*" },
+        "retrieved_at": { "type": ["string", "null"] },
+        "claim_supported": { "type": "string" },
+        "collected_by": { "type": "string" },
+        "verification_status": { "type": "string", "enum": ["verified", "unverified", "unknown"] },
+        "freshness": { "type": ["string", "null"] },
+        "notes": { "type": "string", "pattern": ".*(MOCK|TEST).*" }
+      }
+    }
+  }
+}

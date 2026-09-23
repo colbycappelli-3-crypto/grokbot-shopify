@@ -157,6 +157,23 @@ class ProjectState:
         self._revalidate()
         return entry
 
+    def resolve_approval(self, action: str, status: str, approver: str) -> dict:
+        """Record a simulated or owner decision on a pending approval.
+
+        This updates the audit record only. It does not execute the action.
+        """
+        if status not in {"approved", "denied"}:
+            raise ValueError("Approval status must be 'approved' or 'denied'.")
+        for entry in reversed(self._data.get("approvals", [])):
+            if entry["action"] == action and entry["status"] == "pending":
+                entry["status"] = status
+                entry["approver"] = approver
+                entry["timestamp"] = _utcnow()
+                self._touch()
+                self._revalidate()
+                return entry
+        raise KeyError(f"No pending approval for action '{action}'")
+
     def escalate(self, reason: str) -> dict:
         entry = {"timestamp": _utcnow(), "reason": reason, "status": "open"}
         self._data.setdefault("escalations", []).append(entry)

@@ -1,0 +1,87 @@
+# GROKBOT COMMERCE — validation gate defaults
+#
+# These thresholds are owner-editable defaults for offline screening.
+# They are not universal business rules. Agent code reads this file;
+# it does not hard-code the numbers below.
+version: "1.0.0"
+label: configurable_defaults
+notice: >-
+  Thresholds in this file are configurable defaults for Phase 2 offline
+  screening. Change them here to change gate behavior. They are not
+  hard-coded business law, and a failed gate always carries a
+  machine-readable reason code.
+
+gates:
+  minimum_evidence_completeness:
+    description: >-
+      Demand screening requires this many demand signals whose epistemic
+      status is FACT and that cite evidence.
+    min_verified_demand_signals: 1
+
+  excessive_unknown_critical_fields:
+    description: >-
+      Critical fields that are UNKNOWN above this count send the opportunity
+      back for research. The field list is configurable.
+    critical_fields:
+      - demand
+      - target_customer
+      - competition
+      - pricing_context
+    max_unknown: 0
+
+  economics_completeness:
+    description: >-
+      Gross profit is computed only when every required input is a supplied
+      number. Missing inputs stay UNKNOWN and fail this gate.
+    required_inputs:
+      - selling_price
+      - product_cost
+      - shipping
+      - platform_fees
+      - payment_fees
+      - fulfillment_cost
+
+  margin_threshold:
+    description: >-
+      Configurable default minimum gross margin. Applied only when gross
+      margin is computable. UNKNOWN margin does not pass this threshold by
+      assumption; the economics-completeness gate reports the missing inputs.
+    min_gross_margin: 0.25
+    applies_only_when_computable: true
+
+  unresolved_ip_risk:
+    description: >-
+      Trademark or copyright status in a blocking state prevents automatic
+      approval. UNKNOWN is blocking because missing screening is not a clear.
+    fields:
+      - trademark_risk
+      - copyright_risk
+    blocking_statuses:
+      - unresolved
+      - confirmed
+      - UNKNOWN
+
+  unresolved_prohibited_product_risk:
+    description: >-
+      A prohibited-product flag that is unresolved, confirmed, or UNKNOWN
+      blocks the workflow.
+    field: prohibited_product_risk
+    blocking_statuses:
+      - unresolved
+      - confirmed
+      - UNKNOWN
+
+  supplier_evidence_requirement:
+    description: >-
+      US dropshipping discovery requires verified US fulfillment evidence
+      before later stages treat fulfillment as known. Print-on-demand
+      workflows do not use this gate.
+    applies_to_divisions:
+      - us_dropshipping
+    required_status: verified
+
+  product_validation_outcome:
+    description: >-
+      The product-validation stage must return VALIDATE. RESEARCH_FURTHER and
+      REJECT fail this gate with the agent's machine-readable criteria.
+    required_outcome: VALIDATE

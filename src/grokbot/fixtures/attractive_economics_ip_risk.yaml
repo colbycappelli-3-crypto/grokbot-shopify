@@ -1,0 +1,118 @@
+fixture_id: attractive_economics_ip_risk
+data_classification: TEST_MOCK
+banner: "TEST/MOCK DATA — fabricated for offline simulation. Not real market, supplier, sales, customer, or pricing information."
+workflow_id: pod_opportunity_discovery
+division: print_on_demand
+objective: "Evaluate a TEST/MOCK niche with attractive supplied economics and unresolved IP risk."
+business_model: print_on_demand
+niche_hypothesis: "TEST/MOCK niche: graphic using the fictional token MOCKBRAND-XYZZY."
+candidates:
+  - candidate_id: cand-mockbrand
+    theme: "Fictional MOCKBRAND-XYZZY graphic"
+    category: print_on_demand_apparel
+    epistemic_status: INFERENCE
+    evidence_ids: []
+    statement: "TEST/MOCK candidate. Attractive scenario economics do not resolve the IP flag."
+    unknowns:
+      - "Trademark status of the fictional token is unresolved inside this packet."
+    recommended_research:
+      - "Do not treat unresolved IP as clear."
+market:
+  demand_present: true
+  demand_present_epistemic_status: FACT
+  demand_present_evidence_ids: [ev-ip-demand-1]
+  demand_signals:
+    - claim_id: demand-ip-1
+      field: demand
+      statement: "TEST/MOCK packet includes one verified mock demand signal."
+      epistemic_status: FACT
+      evidence_ids: [ev-ip-demand-1]
+  target_customer:
+    claim_id: customer-ip-1
+    field: target_customer
+    statement: "TEST/MOCK hypothesis: fans of the fictional token. Not a verified audience."
+    epistemic_status: INFERENCE
+    evidence_ids: []
+  competition:
+    claim_id: competition-ip-1
+    field: competition
+    statement: "TEST/MOCK competitive context was supplied and does not clear the IP flag."
+    epistemic_status: INFERENCE
+    evidence_ids: []
+  pricing_context:
+    claim_id: pricing-ip-1
+    field: pricing_context
+    statement: "TEST/MOCK scenario price is a supplied input, not an observed market price."
+    epistemic_status: FACT
+    evidence_ids: [ev-ip-price-1]
+  seasonality:
+    claim_id: seasonality-ip-1
+    field: seasonality
+    statement: "Seasonality was not supplied."
+    epistemic_status: UNKNOWN
+    evidence_ids: []
+  market_risks:
+    - claim_id: risk-ip-1
+      field: market_risk
+      statement: "TEST/MOCK: unresolved trademark status is a blocking risk even when scenario margin looks attractive."
+      epistemic_status: FACT
+      evidence_ids: [ev-ip-1]
+economics:
+  currency: USD
+  selling_price: 40.0
+  product_cost: 8.0
+  shipping: 3.0
+  platform_fees: 1.2
+  payment_fees: 1.16
+  fulfillment_cost: 1.5
+  fixed_costs: null
+compliance:
+  trademark_risk: unresolved
+  copyright_risk: clear
+  prohibited_product_risk: clear
+  deceptive_marketing_risk: clear
+  platform_policy_risk: clear
+  findings:
+    - risk_type: trademark
+      status: unresolved
+      statement: "TEST/MOCK screening flag: trademark status is unresolved for the fictional token MOCKBRAND-XYZZY. No register was queried."
+      epistemic_status: FACT
+      evidence_ids: [ev-ip-1]
+supplier:
+  applicable: false
+  us_fulfillment_evidence_status: unknown
+  statement: "TEST/MOCK: no supplier was contacted."
+  epistemic_status: UNKNOWN
+  evidence_ids: []
+  candidate_suppliers: []
+  commitment_made: false
+assumptions:
+  - "TEST/MOCK assumption: scenario costs are supplied inputs, not quotes."
+evidence:
+  - evidence_id: ev-ip-demand-1
+    source_type: mock
+    source_reference: "MOCK:fixture/attractive_economics_ip_risk#demand"
+    retrieved_at: null
+    claim_supported: "TEST/MOCK demand signal for the IP-risk fixture."
+    collected_by: fixture_loader
+    verification_status: verified
+    freshness: static-test-fixture
+    notes: "TEST/MOCK DATA. Not a real market measurement."
+  - evidence_id: ev-ip-price-1
+    source_type: mock
+    source_reference: "MOCK:fixture/attractive_economics_ip_risk#price"
+    retrieved_at: null
+    claim_supported: "TEST/MOCK supplied scenario price for the IP-risk fixture."
+    collected_by: fixture_loader
+    verification_status: verified
+    freshness: static-test-fixture
+    notes: "TEST/MOCK DATA. Not an observed market price."
+  - evidence_id: ev-ip-1
+    source_type: mock
+    source_reference: "MOCK:fixture/attractive_economics_ip_risk#trademark"
+    retrieved_at: null
+    claim_supported: "TEST/MOCK unresolved trademark flag for fictional token MOCKBRAND-XYZZY."
+    collected_by: fixture_loader
+    verification_status: verified
+    freshness: static-test-fixture
+    notes: "TEST/MOCK DATA. Not a trademark-register result."

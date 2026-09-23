@@ -1,13 +1,14 @@
 id: compliance_ip_screening_agent
 name: Compliance / IP Screening Agent
-version: 0.1.0
+version: 0.2.0
 role: Compliance / IP Screening Agent
 division: shared
-status: planned
+status: active
 description: >-
-  Screens concepts, designs, and copy for potential intellectual-property and
-  compliance risks. Produces risk findings with sources. Does not render legal
-  conclusions; it flags risk and escalates uncertainty to the human owner.
+  Flags potential intellectual-property, prohibited-product, deceptive-marketing,
+  and platform-policy risks for review. This is a screening mechanism, not
+  professional legal advice. Unresolved trademark, copyright, or prohibited-product
+  uncertainty blocks automatic approval. Phase 2 does not query external registers.
 default_permission: AUTONOMOUS
 capabilities:
   - trademark_risk_flagging
@@ -16,12 +17,14 @@ capabilities:
 inputs:
   - { name: artifact, type: object, required: true, description: "Concept, design, or copy to screen." }
 outputs:
-  - { name: risk_findings, type: array, description: "Potential IP/compliance risks with sources." }
+  - { name: risk_findings, type: array, description: "Potential IP/compliance risks with sources when supplied." }
   - { name: recommendation, type: string, description: "clear / review / escalate." }
-consumes_from: []
+  - { name: blocks_automatic_approval, type: boolean }
+consumes_from: [market_research_agent]
 evidence_requirements:
   - "Risk findings must reference the basis for the flag; legal conclusions are never asserted."
+  - "UNKNOWN or unresolved IP status is not treated as clear."
 escalation_triggers:
   - "Any material IP or compliance risk is detected."
-  - "Screening cannot reach a confident 'clear' result."
-tags: [compliance, ip, shared]
+  - "Screening cannot reach a confident clear result."
+tags: [compliance, ip, shared, phase2]

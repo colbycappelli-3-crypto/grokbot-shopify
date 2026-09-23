@@ -1,0 +1,104 @@
+fixture_id: promising_pod
+data_classification: TEST_MOCK
+banner: "TEST/MOCK DATA — fabricated for offline simulation. Not real market, supplier, sales, customer, or pricing information."
+workflow_id: pod_opportunity_discovery
+division: print_on_demand
+objective: "Evaluate a TEST/MOCK print-on-demand niche and stop for human review."
+business_model: print_on_demand
+niche_hypothesis: "TEST/MOCK niche: constellation-cat graphic shirts."
+candidates:
+  - candidate_id: cand-constellation-cat
+    theme: "Constellation cat graphic apparel"
+    category: print_on_demand_apparel
+    epistemic_status: INFERENCE
+    evidence_ids: []
+    statement: "TEST/MOCK candidate only. A supplied theme is not a successful opportunity."
+    unknowns:
+      - "Whether anyone would buy this design is UNKNOWN."
+    recommended_research:
+      - "Check the supplied demand, competition, and pricing labels before validation."
+market:
+  demand_present: true
+  demand_present_epistemic_status: FACT
+  demand_present_evidence_ids: [ev-demand-1]
+  demand_signals:
+    - claim_id: demand-1
+      field: demand
+      statement: "TEST/MOCK packet includes one verified mock demand signal for this niche."
+      epistemic_status: FACT
+      evidence_ids: [ev-demand-1]
+  target_customer:
+    claim_id: customer-1
+    field: target_customer
+    statement: "TEST/MOCK hypothesis: adult gift buyers. This is an inference, not a verified customer study."
+    epistemic_status: INFERENCE
+    evidence_ids: []
+  competition:
+    claim_id: competition-1
+    field: competition
+    statement: "TEST/MOCK competitive context: similar graphic-shirt concepts exist in the packet and differentiation is unproven."
+    epistemic_status: INFERENCE
+    evidence_ids: []
+  pricing_context:
+    claim_id: pricing-1
+    field: pricing_context
+    statement: "TEST/MOCK scenario price is a supplied simulation input, not an observed market price."
+    epistemic_status: FACT
+    evidence_ids: [ev-price-1]
+  seasonality:
+    claim_id: seasonality-1
+    field: seasonality
+    statement: "Seasonality was not supplied."
+    epistemic_status: UNKNOWN
+    evidence_ids: []
+  market_risks:
+    - claim_id: risk-1
+      field: market_risk
+      statement: "TEST/MOCK assumption: gift demand could be occasion-driven."
+      epistemic_status: ASSUMPTION
+      evidence_ids: []
+economics:
+  currency: USD
+  selling_price: 32.0
+  product_cost: 10.0
+  shipping: 3.0
+  platform_fees: 1.5
+  payment_fees: 1.2
+  fulfillment_cost: 2.0
+  fixed_costs: null
+compliance:
+  trademark_risk: clear
+  copyright_risk: clear
+  prohibited_product_risk: clear
+  deceptive_marketing_risk: clear
+  platform_policy_risk: clear
+  findings: []
+supplier:
+  applicable: false
+  us_fulfillment_evidence_status: unknown
+  statement: "TEST/MOCK: print-on-demand discovery does not include a supplier. Fulfillment evidence is UNKNOWN."
+  epistemic_status: UNKNOWN
+  evidence_ids: []
+  candidate_suppliers: []
+  commitment_made: false
+assumptions:
+  - "TEST/MOCK assumption: the scenario selling price is accepted as a supplied input."
+evidence:
+  - evidence_id: ev-demand-1
+    source_type: mock
+    source_reference: "MOCK:fixture/promising_pod#demand-1"
+    retrieved_at: null
+    claim_supported: "TEST/MOCK demand signal for promising_pod."
+    collected_by: fixture_loader
+    verification_status: verified
+    freshness: static-test-fixture
+    notes: "TEST/MOCK DATA. Not a real market measurement."
+  - evidence_id: ev-price-1
+    source_type: mock
+    source_reference: "MOCK:fixture/promising_pod#price-1"
+    retrieved_at: null
+    claim_supported: "TEST/MOCK supplied scenario price for promising_pod."
+    collected_by: fixture_loader
+    verification_status: verified
+    freshness: static-test-fixture
+    notes: "TEST/MOCK DATA. Not an observed market price."

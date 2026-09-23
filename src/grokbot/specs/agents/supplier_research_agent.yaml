@@ -1,14 +1,14 @@
 id: supplier_research_agent
 name: Supplier Research Agent
-version: 0.1.0
+version: 0.2.0
 role: Supplier Research Agent
 division: us_dropshipping
-status: planned
+status: active
 description: >-
-  Researches suppliers, prioritizing reliable vendors with inventory and
-  fulfillment located in the United States when possible. Records supplier
-  attributes with sources; unverified supplier claims remain UNKNOWN. Does not
-  commit to or contract with any supplier.
+  Reports preliminary supplier and fulfillment evidence from supplied inputs,
+  prioritizing US fulfillment when the packet actually contains it. Phase 2
+  does not contact suppliers, place orders, or record a commitment. Unverified
+  fulfillment stays UNKNOWN.
 default_permission: AUTONOMOUS
 capabilities:
   - supplier_discovery
@@ -17,11 +17,12 @@ capabilities:
 inputs:
   - { name: product_profile, type: object, required: true }
 outputs:
-  - { name: candidate_suppliers, type: array, description: "Suppliers with attributes and sources." }
-  - { name: us_fulfillment_available, type: boolean, description: "Whether a US-based fulfillment option was found; UNKNOWN if unverified." }
-consumes_from: [product_validation_agent]
+  - { name: candidate_suppliers, type: array, description: "Suppliers copied from supplied evidence only." }
+  - { name: us_fulfillment_available, type: string, description: "true when verified; otherwise UNKNOWN. Never implied." }
+consumes_from: [product_validation_agent, market_research_agent]
 evidence_requirements:
   - "Supplier location and reliability claims must be sourced or marked UNKNOWN."
+  - "A commitment flag in the input is refused and recorded as not committed."
 escalation_triggers:
-  - "No reliable supplier identified for a validated opportunity."
-tags: [supplier, us_dropshipping]
+  - "No verified US fulfillment evidence was supplied for a dropshipping opportunity."
+tags: [supplier, us_dropshipping, phase2]
