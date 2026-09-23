@@ -31,6 +31,7 @@ class OpportunityRun:
     stop_details: dict = field(default_factory=dict)
     external_actions_performed: List[dict] = field(default_factory=list)
     pending_approval_action: Optional[str] = None
+    review_item_id: Optional[str] = None
     phase: str = PHASE
 
     def stage_status(self, stage_id: str) -> str:

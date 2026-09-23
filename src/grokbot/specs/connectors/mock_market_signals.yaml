@@ -1,0 +1,25 @@
+id: mock_market_signals
+name: Mock Market Signals
+version: 0.3.0
+mode: mock
+access: read_only
+divisions: [shared, print_on_demand, us_dropshipping, digital_services]
+operations_allowed: [search, describe]
+operations_forbidden:
+  - publish
+  - purchase
+  - create_order
+  - place_order
+  - send_message
+  - refund
+  - launch_store
+  - contact_supplier
+  - update_product
+  - create_listing
+  - modify_shopify
+  - connect
+credentials_required: false
+production_connected: false
+description: >-
+  TEST/MOCK demand, customer, competition, and pricing labels for offline
+  research. This connector does not call a live market-data service.

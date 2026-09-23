@@ -1,0 +1,14 @@
+connector_id: mock_shopify_catalog
+data_classification: TEST_MOCK
+banner: "TEST/MOCK DATA — catalog interface is not connected to a production Shopify store."
+queries:
+  pod-draft-catalog:
+    data_classification: TEST_MOCK
+    unknowns: []
+    evidence: []
+    payload:
+      catalog:
+        production_connected: false
+        publish_status: not_published
+        products: []
+        note: "TEST/MOCK catalog interface. No production store is connected and nothing was published."

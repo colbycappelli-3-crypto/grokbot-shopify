@@ -1,0 +1,12 @@
+packet_id: fiverr_complaint_refund
+data_classification: TEST_MOCK
+banner: "TEST/MOCK DATA — fictional complaint. No message was sent and no refund was issued."
+workflow_id: fiverr_service_research_review
+division: digital_services
+objective: "Prepare a TEST/MOCK complaint response without sending it or issuing a refund."
+business_model: digital_services
+niche_hypothesis: "TEST/MOCK complaint on mock gig mock-gig-001."
+assumptions:
+  - "TEST/MOCK assumption: a refund request escalates and does not issue a refund."
+connector_requests:
+  - { connector_id: mock_fiverr_marketplace, operation: search, query_id: complaint-refund }

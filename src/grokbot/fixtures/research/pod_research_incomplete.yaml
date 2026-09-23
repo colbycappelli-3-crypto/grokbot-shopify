@@ -1,0 +1,12 @@
+packet_id: pod_research_incomplete
+data_classification: TEST_MOCK
+banner: "TEST/MOCK DATA — demand was intentionally left unknown. Not real market information."
+workflow_id: pod_research_review
+division: print_on_demand
+objective: "Research a TEST/MOCK print-on-demand concept that lacks demand evidence."
+business_model: print_on_demand
+niche_hypothesis: "TEST/MOCK niche: constellation-cat graphic shirts, demand unknown."
+assumptions:
+  - "TEST/MOCK assumption: missing demand must stay UNKNOWN."
+connector_requests:
+  - { connector_id: mock_market_signals, operation: search, query_id: pod-demand-unknown }

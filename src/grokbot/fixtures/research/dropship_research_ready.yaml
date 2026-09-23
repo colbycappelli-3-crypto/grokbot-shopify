@@ -1,0 +1,13 @@
+packet_id: dropship_research_ready
+data_classification: TEST_MOCK
+banner: "TEST/MOCK DATA — fictional product and US warehouse. No supplier was contacted."
+workflow_id: us_dropship_research_review
+division: us_dropshipping
+objective: "Research a TEST/MOCK US-dropshipping product with a mock US warehouse and stop for human review."
+business_model: us_dropshipping
+niche_hypothesis: "TEST/MOCK niche: desk cable clip fulfilled from a fictional US warehouse."
+assumptions:
+  - "TEST/MOCK assumption: the warehouse label is not a measured transit time."
+connector_requests:
+  - { connector_id: mock_market_signals, operation: search, query_id: dropship-clip-ready }
+  - { connector_id: mock_us_supplier_directory, operation: describe, query_id: us-warehouse-alpha }

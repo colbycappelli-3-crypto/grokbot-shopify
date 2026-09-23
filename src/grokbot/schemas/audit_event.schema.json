@@ -24,7 +24,9 @@
         "approval_decision",
         "action_blocked",
         "retry_scheduled",
-        "decision_recorded"
+        "decision_recorded",
+        "review_enqueued",
+        "review_decision"
       ]
     },
     "details": { "type": "object" }

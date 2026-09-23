@@ -1,0 +1,12 @@
+packet_id: fiverr_revision_ready
+data_classification: TEST_MOCK
+banner: "TEST/MOCK DATA — fictional Fiverr gig. No message was sent and no order was placed."
+workflow_id: fiverr_service_research_review
+division: digital_services
+objective: "Research a TEST/MOCK Fiverr service and prepare an unsent revision draft."
+business_model: digital_services
+niche_hypothesis: "TEST/MOCK service: product-description writing for mock gig mock-gig-001."
+assumptions:
+  - "TEST/MOCK assumption: a revision draft is not a sent message."
+connector_requests:
+  - { connector_id: mock_fiverr_marketplace, operation: search, query_id: revision-gig }

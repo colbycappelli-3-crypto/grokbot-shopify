@@ -1,0 +1,87 @@
+id: pod_research_review
+name: POD Research Review
+version: 0.3.0
+division: print_on_demand
+description: >-
+  Read-only research for a print-on-demand shirt and hat concept, then an
+  unpublished product draft and a human review. No store is launched and no
+  product is published.
+objective: research_pod_concept
+stages:
+  - id: market_research
+    name: Commerce research
+    type: action
+    agent: research_connector_agent
+    permission: AUTONOMOUS
+    depends_on: []
+    produces: [demand_signals, connector_results]
+
+  - id: product_validation
+    name: Product validation
+    type: action
+    agent: product_validation_agent
+    permission: AUTONOMOUS
+    depends_on: [market_research]
+    produces: [validation_outcome]
+
+  - id: product_validation_gate
+    name: Product validation gate
+    type: validation_gate
+    depends_on: [product_validation]
+    validation:
+      criteria:
+        - "Product validation outcome is VALIDATE under the configured rules."
+        - "Verified demand evidence meets the configured minimum."
+        - "Critical fields are not excessively UNKNOWN."
+      gate_ids:
+        - product_validation_outcome
+        - minimum_evidence_completeness
+        - excessive_unknown_critical_fields
+      on_fail: request_more_research
+
+  - id: pod_draft
+    name: POD product draft
+    type: action
+    agent: pod_product_draft_agent
+    permission: AUTONOMOUS
+    depends_on: [product_validation_gate]
+    produces: [drafts]
+
+  - id: compliance_screen
+    name: Compliance and IP screening
+    type: action
+    agent: compliance_ip_screening_agent
+    permission: AUTONOMOUS
+    depends_on: [pod_draft]
+    produces: [risk_findings]
+
+  - id: compliance_gate
+    name: Compliance and IP gate
+    type: validation_gate
+    depends_on: [compliance_screen]
+    validation:
+      criteria:
+        - "Trademark and copyright status are clear."
+        - "Prohibited-product status is clear."
+      gate_ids:
+        - unresolved_ip_risk
+        - unresolved_prohibited_product_risk
+      on_fail: escalate
+
+  - id: compile_dossier
+    name: Compile opportunity dossier
+    type: action
+    agent: opportunity_dossier_agent
+    permission: AUTONOMOUS
+    depends_on: [compliance_gate]
+    produces: [dossier]
+
+  - id: human_review
+    name: Human review gate
+    type: approval_gate
+    depends_on: [compile_dossier]
+    approval:
+      approver: human_owner
+      description: >-
+        Review the POD research dossier and unpublished drafts. Approval does
+        not launch a store, publish a product, or spend money.

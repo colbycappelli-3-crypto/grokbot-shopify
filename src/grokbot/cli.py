@@ -2,9 +2,11 @@
 
 Commands perform no external actions:
 
-* ``grokbot validate`` — load and validate specs, gates, fixtures, and cross-references.
+* ``grokbot validate`` — load and validate specs, gates, fixtures, connectors, and packets.
 * ``grokbot plan <workflow>`` — print a dependency-ordered plan for a workflow.
 * ``grokbot simulate <workflow> --fixture <id>`` — run an offline TEST/MOCK simulation.
+* ``grokbot research <workflow> --packet <id>`` — run read-only research and enqueue review.
+* ``grokbot review`` — list, show, render, or decide a human review. Decisions do not execute.
 """
 from __future__ import annotations
 
@@ -13,11 +15,14 @@ import sys
 from typing import List, Optional
 
 from .agents.registry import AgentRegistry
-from .fixtures.loader import load_all_fixtures, load_fixture
+from .connectors.registry import ConnectorRegistry
+from .fixtures.loader import load_all_fixtures, load_all_research_packets, load_fixture, load_research_packet
 from .gates.loader import load_validation_gates
 from .orchestrator.engine import WorkflowSelectionError, build_runner
 from .orchestrator.orchestrator import Orchestrator
 from .policy.approval import load_default_policy
+from .review.queue import ReviewQueue, ReviewStateError, default_review_dir
+from .review.surface import render_reviews, serve_reviews
 from .validation import SpecValidationError
 from .workflows.loader import load_all_workflows
 
@@ -67,12 +72,46 @@ def _fixture_problems(fixtures, workflows) -> List[str]:
     return problems
 
 
+def _research_problems(packets, workflows, connectors: ConnectorRegistry) -> List[str]:
+    known = {workflow.id: workflow for workflow in workflows}
+    problems: List[str] = []
+    for packet in packets:
+        workflow = known.get(packet["workflow_id"])
+        if workflow is None:
+            problems.append(
+                f"research packet '{packet['packet_id']}' references unknown workflow '{packet['workflow_id']}'"
+            )
+        elif workflow.division != packet["division"]:
+            problems.append(
+                f"research packet '{packet['packet_id']}' division does not match workflow '{workflow.id}'"
+            )
+        for request in packet["connector_requests"]:
+            spec = connectors.get(request["connector_id"])
+            if spec is None:
+                problems.append(
+                    f"research packet '{packet['packet_id']}' references unknown connector '{request['connector_id']}'"
+                )
+                continue
+            if request["operation"] not in spec["operations_allowed"]:
+                problems.append(
+                    f"research packet '{packet['packet_id']}' operation '{request['operation']}' is not allowed"
+                )
+            queries = (connectors.mocks.get(request["connector_id"]) or {}).get("queries") or {}
+            if request["query_id"] not in queries:
+                problems.append(
+                    f"research packet '{packet['packet_id']}' query '{request['query_id']}' is not in the mock connector"
+                )
+    return problems
+
+
 def cmd_validate(_args: argparse.Namespace) -> int:
     registry, workflows, policy = _load_all()
     try:
         gate_config = load_validation_gates()
         fixtures = load_all_fixtures()
-    except SpecValidationError as exc:
+        connectors = ConnectorRegistry.load()
+        packets = load_all_research_packets()
+    except (SpecValidationError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 1
     print(f"Agents:    {len(registry)} loaded and schema-valid")
@@ -83,9 +122,12 @@ def cmd_validate(_args: argparse.Namespace) -> int:
     )
     print(f"Gates:     v{gate_config['version']}, {len(gate_config['gates'])} configurable defaults")
     print(f"Fixtures:  {len(fixtures)} TEST/MOCK packets")
+    print(f"Connectors:{len(connectors)} read-only/mock")
+    print(f"Research:  {len(packets)} TEST/MOCK packets")
     problems = _cross_reference_problems(registry, workflows)
     problems.extend(_gate_problems(workflows, gate_config))
     problems.extend(_fixture_problems(fixtures, workflows))
+    problems.extend(_research_problems(packets, workflows, connectors))
     if problems:
         print("\nCross-reference problems:")
         for problem in problems:
@@ -169,6 +211,131 @@ def cmd_simulate(args: argparse.Namespace) -> int:
     return 0
 
 
+def _print_run(run, label: str) -> None:
+    dossier = run.dossier or {}
+    print(f"Phase:     {run.phase}")
+    print(f"Project:   {run.project.project_id}")
+    print(f"Workflow:  {run.workflow.id}")
+    print(f"Status:    {run.project.status}")
+    print(f"Stopped:   {run.stop_reason}")
+    print(f"Source:    {label}")
+    print(f"External actions performed: {len(run.external_actions_performed)}")
+    if run.review_item_id:
+        print(f"Review:    {run.review_item_id}")
+    print(f"\n{dossier.get('banner', '')}")
+    print("No external commerce action was performed.")
+
+
+def cmd_research(args: argparse.Namespace) -> int:
+    try:
+        packet = load_research_packet(args.packet)
+    except SpecValidationError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    runner = build_runner()
+    queue = ReviewQueue(args.queue)
+    objective = args.objective or packet["objective"]
+    try:
+        run = runner.open_opportunity(objective, workflow_id=args.workflow, fixture=packet)
+    except WorkflowSelectionError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    runner.run(run, review_queue=queue)
+    _print_run(run, f"{packet['packet_id']} ({packet['data_classification']})")
+    return 0
+
+
+def _queue(args: argparse.Namespace) -> ReviewQueue:
+    return ReviewQueue(args.queue)
+
+
+def cmd_review_list(args: argparse.Namespace) -> int:
+    try:
+        items = _queue(args).list_items()
+    except ReviewStateError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    if not items:
+        print("No review items.")
+        return 0
+    for item in items:
+        print(f"{item['review_id']}  {item['status']}  {item['workflow_id']}  {item['project_id']}")
+    return 0
+
+
+def cmd_review_show(args: argparse.Namespace) -> int:
+    try:
+        item = _queue(args).get(args.review_id)
+    except ReviewStateError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    print(f"Review:    {item['review_id']}")
+    print(f"Status:    {item['status']}")
+    print(f"Workflow:  {item['workflow_id']}")
+    print(f"Project:   {item['project_id']}")
+    print(f"Banner:    {item['banner']}")
+    print(f"Summary:   {item['summary']}")
+    print(f"Unknowns:  {len(item['unknowns'])}")
+    print(f"External actions performed: {len(item['consequential_actions_performed'])}")
+    decision = item.get("decision") or {}
+    if decision:
+        print(f"Decision:  {decision.get('decision')} executed_external_action={decision.get('executed_external_action')}")
+    return 0
+
+
+def cmd_review_render(args: argparse.Namespace) -> int:
+    try:
+        page = render_reviews(_queue(args))
+    except ReviewStateError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    if args.output:
+        from pathlib import Path
+
+        Path(args.output).write_text(page, encoding="utf-8")
+        print(f"Wrote {args.output}")
+    else:
+        print(page)
+    return 0
+
+
+def cmd_review_serve(args: argparse.Namespace) -> int:
+    try:
+        queue = _queue(args)
+        queue.list_items()
+    except ReviewStateError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    server = serve_reviews(queue, host=args.host, port=args.port)
+    print(f"Read-only review page at http://{args.host}:{server.server_address[1]}/")
+    print("POST is rejected. This server does not execute decisions. Ctrl-C stops it.")
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\nStopped.")
+    finally:
+        server.server_close()
+    return 0
+
+
+def cmd_review_decide(args: argparse.Namespace) -> int:
+    queue = _queue(args)
+    try:
+        item = queue.decide(args.review_id, args.decision, note=args.note or "", decided_by=args.by)
+    except (ReviewStateError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    recorded = item["decision"]
+    print(f"Review:    {item['review_id']}")
+    print(f"Status:    {item['status']}")
+    print(f"Decision:  {recorded['decision']}")
+    print(f"Executed external action: {recorded['executed_external_action']}")
+    if recorded.get("blocked_reason"):
+        print(f"Blocked:   {recorded['blocked_reason']}")
+    print("No purchase, publication, supplier contact, message, order, or refund was performed.")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="grokbot",
@@ -192,6 +359,47 @@ def build_parser() -> argparse.ArgumentParser:
     simulate.add_argument("--fixture", required=True, help="Fixture id, for example promising_pod.")
     simulate.add_argument("--objective", default=None)
     simulate.set_defaults(func=cmd_simulate)
+
+    research = sub.add_parser(
+        "research",
+        help="Run a read-only research workflow and enqueue human review.",
+    )
+    research.add_argument("workflow", help="Research workflow id.")
+    research.add_argument("--packet", required=True, help="Research packet id.")
+    research.add_argument("--objective", default=None)
+    research.add_argument("--queue", default=default_review_dir(), help="Review queue directory.")
+    research.set_defaults(func=cmd_research)
+
+    review = sub.add_parser("review", help="Inspect or decide a human review. Decisions do not execute.")
+    review_sub = review.add_subparsers(dest="review_command", required=True)
+
+    review_list = review_sub.add_parser("list", help="List queued reviews.")
+    review_list.add_argument("--queue", default=default_review_dir())
+    review_list.set_defaults(func=cmd_review_list)
+
+    review_show = review_sub.add_parser("show", help="Show one review.")
+    review_show.add_argument("review_id")
+    review_show.add_argument("--queue", default=default_review_dir())
+    review_show.set_defaults(func=cmd_review_show)
+
+    review_render = review_sub.add_parser("render", help="Render the read-only HTML review page.")
+    review_render.add_argument("--queue", default=default_review_dir())
+    review_render.add_argument("--output", default=None)
+    review_render.set_defaults(func=cmd_review_render)
+
+    review_serve = review_sub.add_parser("serve", help="Serve the read-only HTML review page on localhost.")
+    review_serve.add_argument("--queue", default=default_review_dir())
+    review_serve.add_argument("--host", default="127.0.0.1")
+    review_serve.add_argument("--port", type=int, default=8765)
+    review_serve.set_defaults(func=cmd_review_serve)
+
+    review_decide = review_sub.add_parser("decide", help="Record a decision without executing it.")
+    review_decide.add_argument("review_id")
+    review_decide.add_argument("--decision", required=True, choices=["approved", "denied", "research_requested"])
+    review_decide.add_argument("--note", default="")
+    review_decide.add_argument("--by", default="human_owner")
+    review_decide.add_argument("--queue", default=default_review_dir())
+    review_decide.set_defaults(func=cmd_review_decide)
 
     return parser
 

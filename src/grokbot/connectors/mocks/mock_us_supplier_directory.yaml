@@ -1,0 +1,41 @@
+connector_id: mock_us_supplier_directory
+data_classification: TEST_MOCK
+banner: "TEST/MOCK DATA — fictional supplier directory. No supplier was contacted."
+queries:
+  us-warehouse-alpha:
+    data_classification: TEST_MOCK
+    unknowns: []
+    evidence:
+      - evidence_id: ev-p3-wh-1
+        source_type: mock
+        source_reference: "MOCK:connector/mock_us_supplier_directory#us-warehouse-alpha"
+        claim_supported: "TEST/MOCK label that MOCK Warehouse Alpha is a US warehouse."
+        collected_by: mock_us_supplier_directory
+        verification_status: verified
+        notes: "TEST/MOCK directory entry. Not a real supplier. No order was placed."
+    payload:
+      applicable: true
+      us_fulfillment_evidence_status: verified
+      statement: "TEST/MOCK supplier record says MOCK Warehouse Alpha is a US warehouse. No supplier was contacted."
+      epistemic_status: FACT
+      evidence_ids: [ev-p3-wh-1]
+      commitment_made: false
+      candidate_suppliers:
+        - supplier_id: mock-warehouse-alpha
+          display_name: "MOCK Warehouse Alpha"
+          us_fulfillment: true
+          epistemic_status: FACT
+          evidence_ids: [ev-p3-wh-1]
+          notes: "TEST/MOCK DATA. Not a real supplier. No order was placed."
+  warehouse-not-in-packet:
+    data_classification: TEST_MOCK
+    unknowns: ["US warehouse evidence was not supplied."]
+    evidence: []
+    payload:
+      applicable: true
+      us_fulfillment_evidence_status: unknown
+      statement: "TEST/MOCK: no US warehouse evidence was supplied for this query."
+      epistemic_status: UNKNOWN
+      evidence_ids: []
+      commitment_made: false
+      candidate_suppliers: []

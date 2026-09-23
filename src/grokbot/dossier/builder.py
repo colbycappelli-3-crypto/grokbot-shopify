@@ -36,7 +36,7 @@ def build_dossier(run: Any) -> dict:
     banner = fixture.get("banner") or (
         "UNSOURCED — no fixture was supplied. Missing information is UNKNOWN."
     )
-    market = run.outputs.get("market_research") or {}
+    market = run.outputs.get("market_research") or run.outputs.get("service_research") or {}
     trend = run.outputs.get("trend_discovery") or {}
     validation = run.outputs.get("product_validation") or {}
     economics = run.outputs.get("unit_economics") or {}
@@ -141,6 +141,7 @@ def build_dossier(run: Any) -> dict:
                     "statement": market.get("business_model") or fixture.get("business_model") or "UNKNOWN",
                     "epistemic_status": "INFERENCE" if fixture.get("business_model") else "UNKNOWN",
                     "notes": "Workflow division selected for this offline run. Not a verified market fact.",
+                    "preparation": _preparation(run),
                 },
                 "INFERENCE" if fixture.get("business_model") else "UNKNOWN",
             ),
@@ -393,6 +394,18 @@ def _decisions(run: Any) -> List[dict]:
             }
         )
     return decisions
+
+
+def _preparation(run: Any) -> dict:
+    """Draft-only division outputs. Missing stages stay absent rather than invented."""
+    prepared = {}
+    for stage_id in ("pod_draft", "listing_draft", "service_workflow", "communication_draft", "service_research"):
+        output = run.outputs.get(stage_id)
+        if isinstance(output, dict):
+            prepared[stage_id] = output
+    if not prepared:
+        return {"prepared": False, "value": "UNKNOWN"}
+    return {"prepared": True, "stages": prepared}
 
 
 def _next_stage(run: Any) -> str:

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokbot.commerce/schemas/research_packet.schema.json",
+  "title": "GROKBOT Research Packet",
+  "description": "TEST/MOCK instructions for a read-only research workflow. Packets name connector queries. They do not contain credentials.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "packet_id",
+    "data_classification",
+    "banner",
+    "workflow_id",
+    "division",
+    "objective",
+    "connector_requests"
+  ],
+  "properties": {
+    "packet_id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*$" },
+    "data_classification": { "type": "string", "const": "TEST_MOCK" },
+    "banner": { "type": "string", "minLength": 1 },
+    "workflow_id": { "type": "string", "minLength": 1 },
+    "division": {
+      "type": "string",
+      "enum": ["shared", "print_on_demand", "us_dropshipping", "digital_services"]
+    },
+    "objective": { "type": "string", "minLength": 1 },
+    "business_model": { "type": "string" },
+    "niche_hypothesis": { "type": "string" },
+    "assumptions": { "type": "array", "items": { "type": "string" } },
+    "connector_requests": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["connector_id", "operation", "query_id"],
+        "properties": {
+          "connector_id": { "type": "string", "minLength": 1 },
+          "operation": { "type": "string", "enum": ["search", "describe"] },
+          "query_id": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

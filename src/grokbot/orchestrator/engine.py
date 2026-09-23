@@ -15,7 +15,7 @@ from ..audit.log import redact
 from ..agents.runtime.common import FIXTURE_AGENTS
 from ..clock import utc_now
 from ..dossier.builder import build_dossier
-from ..evidence.ledger import record_from_dict
+from ..evidence.ledger import EvidenceError, record_from_dict
 from ..gates.evaluator import build_gate_context, evaluate_gate, select_on_fail
 from ..gates.loader import load_validation_gates
 from ..phase import CONSEQUENTIAL_ACTION_CATEGORIES, NON_EXECUTABLE_AGENTS, PHASE
@@ -38,6 +38,12 @@ AGENT_CATEGORY = {
     "opportunity_dossier_agent": "market_research",
     "shopify_store_builder_agent": "launch_store",
     "customer_service_agent": "send_customer_message",
+    "research_connector_agent": "commerce_research_read",
+    "pod_product_draft_agent": "product_design_draft",
+    "listing_draft_agent": "merchandising_plan_draft",
+    "service_research_agent": "market_research",
+    "service_workflow_agent": "quality_assurance_review",
+    "service_communication_draft_agent": "prepare_customer_message_draft",
 }
 
 _STOP_STATUS = {
@@ -151,7 +157,12 @@ class WorkflowRunner:
         self._decide(run, "grokbot", f"Opened offline opportunity on workflow {workflow.id}.")
         return run
 
-    def run(self, run: OpportunityRun, faults: Optional[Dict[str, List[dict]]] = None) -> OpportunityRun:
+    def run(
+        self,
+        run: OpportunityRun,
+        faults: Optional[Dict[str, List[dict]]] = None,
+        review_queue: Optional[Any] = None,
+    ) -> OpportunityRun:
         script = FaultScript(faults)
         while not run.stopped:
             stage = self._next_stage(run)
@@ -165,7 +176,7 @@ class WorkflowRunner:
                 self._stop_for_human_review(run, stage)
             else:
                 self._execute_job(run, stage, script)
-        self._finalize(run)
+        self._finalize(run, review_queue)
         return run
 
     def attempt_action(self, run: OpportunityRun, category: str) -> dict:
@@ -277,7 +288,7 @@ class WorkflowRunner:
         )
         if run.review_packet is not None:
             run.review_packet["decision"] = decision
-            run.review_packet["execution"] = "not_performed_phase_2"
+            run.review_packet["execution"] = "not_performed"
         return {
             "decision": decision,
             "blocked_reason": None,
@@ -292,14 +303,7 @@ class WorkflowRunner:
         for raw in run.fixture.get("evidence") or []:
             record = record_from_dict(raw)
             run.evidence.add(record)
-            run.audit.record(
-                "evidence_added",
-                project_id=run.project.project_id,
-                evidence_id=record.evidence_id,
-                source_type=record.source_type,
-                verification_status=record.verification_status,
-                collected_by=record.collected_by,
-            )
+            self._audit_evidence(run, record)
             key = f"evidence:{record.evidence_id}"
             if record.verification_status == "verified":
                 run.project.record_evidence(
@@ -419,6 +423,22 @@ class WorkflowRunner:
             )
         else:
             result = self._invoke(run, job)
+        if result.status == "completed":
+            try:
+                self._ingest_output_evidence(run, result.structured_output)
+            except EvidenceError as exc:
+                result = make_result(
+                    job,
+                    status="failed",
+                    recommended_next_action="stop",
+                    errors=[
+                        {
+                            "code": "evidence_rejected",
+                            "message": str(redact(str(exc)))[:500],
+                            "retryable": False,
+                        }
+                    ],
+                )
         if result.status != "completed":
             self._handle_failure(run, stage, job, result)
             return
@@ -611,7 +631,7 @@ class WorkflowRunner:
         self._decide(run, "grokbot", f"Stopped for human review at {stage.id}.", rationale=description)
         self._stop(run, "human_review", stage_id=stage.id)
 
-    def _finalize(self, run: OpportunityRun) -> None:
+    def _finalize(self, run: OpportunityRun, review_queue: Optional[Any] = None) -> None:
         if run.stopped:
             for stage in run.workflow.stages:
                 if run.stage_status(stage.id) == "pending":
@@ -625,8 +645,10 @@ class WorkflowRunner:
             run.outputs["compile_dossier"]["final_dossier_id"] = run.dossier["dossier_id"]
         if run.stopped:
             run.review_packet = self._review_packet(run)
+        if review_queue is not None and run.stopped:
+            self._enqueue_review(run, review_queue)
         if run.external_actions_performed:
-            raise RuntimeError("Phase 2 invariant failed: an external action was recorded.")
+            raise RuntimeError("Phase invariant failed: an external action was recorded.")
 
     # ---- helpers ---------------------------------------------------------------
     def _preflight(self, stage, job: Job) -> Optional[dict]:
@@ -790,9 +812,73 @@ class WorkflowRunner:
             "consequential_actions_performed": [],
             "statement": (
                 "Workflow stopped. No store creation, supplier commitment, purchase, "
-                "publication, advertising, or customer communication was performed."
+                "publication, advertising, customer communication, Fiverr order, or refund was performed."
             ),
         }
+
+    def apply_review_decision(
+        self,
+        run: OpportunityRun,
+        review_queue: Any,
+        review_id: str,
+        decision: str,
+        note: str = "",
+        decided_by: str = "human_owner",
+    ) -> dict:
+        """Record a human review decision. The decision never executes an external action."""
+        item = review_queue.decide(review_id, decision, note=note, decided_by=decided_by)
+        recorded = item["decision"]
+        run.audit.record(
+            "review_decision",
+            project_id=run.project.project_id,
+            review_id=review_id,
+            decision=recorded["decision"],
+            blocked_reason=recorded.get("blocked_reason"),
+            executed_external_action=False,
+        )
+        return item
+
+    def _audit_evidence(self, run: OpportunityRun, record) -> None:
+        run.audit.record(
+            "evidence_added",
+            project_id=run.project.project_id,
+            evidence_id=record.evidence_id,
+            source_type=record.source_type,
+            verification_status=record.verification_status,
+            collected_by=record.collected_by,
+        )
+
+    def _ingest_output_evidence(self, run: OpportunityRun, output: Any) -> None:
+        if not isinstance(output, dict):
+            return
+        for raw in output.get("evidence_records") or []:
+            if not isinstance(raw, dict):
+                raise EvidenceError("Connector evidence record must be an object.")
+            record = record_from_dict(raw)
+            existing = run.evidence.get(record.evidence_id)
+            if existing is not None:
+                if existing.to_dict() != record.to_dict():
+                    raise EvidenceError(f"Conflicting evidence id {record.evidence_id}.")
+                continue
+            run.evidence.add(record)
+            self._audit_evidence(run, record)
+
+    def _enqueue_review(self, run: OpportunityRun, review_queue: Any) -> None:
+        from ..review.queue import build_review_item
+
+        item = build_review_item(run, approval_block_reason=self._approval_block_reason(run))
+        stored = review_queue.enqueue(item)
+        run.review_item_id = stored["review_id"]
+        if run.review_packet is not None:
+            run.review_packet["review_id"] = stored["review_id"]
+        run.audit.record(
+            "review_enqueued",
+            project_id=run.project.project_id,
+            review_id=stored["review_id"],
+            workflow_id=run.workflow.id,
+            status=stored["status"],
+            stop_reason=run.stop_reason,
+        )
 
 
 def _jsonable(details: dict) -> dict:

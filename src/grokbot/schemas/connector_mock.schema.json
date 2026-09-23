@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokbot.commerce/schemas/connector_mock.schema.json",
+  "title": "GROKBOT Connector Mock",
+  "description": "TEST/MOCK payloads for a read-only connector. Missing queries are not listed and must stay UNKNOWN.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["connector_id", "data_classification", "banner", "queries"],
+  "properties": {
+    "connector_id": { "type": "string", "minLength": 1 },
+    "data_classification": { "type": "string", "const": "TEST_MOCK" },
+    "banner": { "type": "string", "minLength": 1 },
+    "queries": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data_classification", "payload"],
+        "properties": {
+          "data_classification": { "type": "string", "const": "TEST_MOCK" },
+          "payload": { "type": "object" },
+          "evidence": { "type": "array", "items": { "type": "object" } },
+          "unknowns": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

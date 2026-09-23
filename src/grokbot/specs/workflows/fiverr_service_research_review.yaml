@@ -1,0 +1,64 @@
+id: fiverr_service_research_review
+name: Fiverr Service Research Review
+version: 0.3.0
+division: digital_services
+description: >-
+  Read-only research for a service opportunity, a local task workflow, and an
+  unsent message draft. Complaints and refund requests escalate. No Fiverr
+  message, order, or refund is performed.
+objective: research_fiverr_service
+stages:
+  - id: service_research
+    name: Service research
+    type: action
+    agent: service_research_agent
+    permission: AUTONOMOUS
+    depends_on: []
+    produces: [service_offer]
+
+  - id: service_workflow
+    name: Service workflow draft
+    type: action
+    agent: service_workflow_agent
+    permission: AUTONOMOUS
+    depends_on: [service_research]
+    produces: [tasks]
+
+  - id: communication_draft
+    name: Communication draft
+    type: action
+    agent: service_communication_draft_agent
+    permission: AUTONOMOUS
+    depends_on: [service_workflow]
+    produces: [draft]
+
+  - id: service_gate
+    name: Service delivery readiness
+    type: validation_gate
+    depends_on: [communication_draft]
+    validation:
+      criteria:
+        - "The service offer is known."
+        - "No message was sent and no refund was issued."
+        - "Refund or complaint requests escalate without action."
+      gate_ids:
+        - service_delivery_readiness
+      on_fail: halt
+
+  - id: compile_dossier
+    name: Compile opportunity dossier
+    type: action
+    agent: opportunity_dossier_agent
+    permission: AUTONOMOUS
+    depends_on: [service_gate]
+    produces: [dossier]
+
+  - id: human_review
+    name: Human review gate
+    type: approval_gate
+    depends_on: [compile_dossier]
+    approval:
+      approver: human_owner
+      description: >-
+        Review the service dossier and unsent draft. Approval does not message
+        a customer, place a Fiverr order, or issue a refund.

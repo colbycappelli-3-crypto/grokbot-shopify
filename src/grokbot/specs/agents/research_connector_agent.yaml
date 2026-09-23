@@ -1,0 +1,29 @@
+id: research_connector_agent
+name: Research Connector Agent
+version: 0.3.0
+role: Research Connector Agent
+division: shared
+status: active
+description: >-
+  Reads TEST/MOCK or unconfigured read-only commerce connectors and copies
+  their labels. Missing connector data stays UNKNOWN. The agent does not
+  purchase, publish, contact suppliers, or use credentials.
+default_permission: AUTONOMOUS
+capabilities:
+  - read_only_connector_query
+  - evidence_passthrough
+inputs:
+  - { name: objective, type: string, required: true, description: "Research objective." }
+  - { name: connector_requests, type: array, required: true, description: "Connector id, operation, and query id." }
+outputs:
+  - { name: demand_signals, type: array, description: "Demand labels copied from connector results." }
+  - { name: connector_results, type: array, description: "Read-only connector summaries. External actions stay empty." }
+  - { name: evidence_records, type: array, description: "TEST/MOCK evidence to record before epistemic checks." }
+consumes_from: []
+evidence_requirements:
+  - "FACT claims require evidence returned by the connector and marked MOCK or TEST."
+  - "A missing query stays UNKNOWN. The agent must not invent demand, prices, or suppliers."
+escalation_triggers:
+  - "Connector result is UNKNOWN."
+  - "A requested operation is forbidden."
+tags: [research, shared, phase3, read_only]

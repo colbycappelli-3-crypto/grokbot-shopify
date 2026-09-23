@@ -26,8 +26,8 @@ Rules:
 5. **Escalation.** List `escalation_triggers` for conditions that must go to the
    human owner (insufficient evidence, disputes, refunds, IP risk, anomalies).
 6. **Lifecycle.** Use `status`: `planned` (no behavior yet), `draft`, `active`,
-   `deprecated`. Agents with an offline Phase 2 runtime are `active`. Agents
-   that would take external action stay `planned` until a later approved phase.
+   `deprecated`. Agents with an offline runtime are `active`. Agents that would
+   take an external action stay `planned` until a later approved phase.
 
 ## Workflow specification standards
 

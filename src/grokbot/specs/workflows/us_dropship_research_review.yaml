@@ -1,0 +1,124 @@
+id: us_dropship_research_review
+name: US Dropship Research Review
+version: 0.3.0
+division: us_dropshipping
+description: >-
+  Read-only research for a US-dropshipping product, including mock supplier
+  evidence, economics, and an unpublished listing draft. No supplier is
+  contacted and no listing is published.
+objective: research_us_dropship_product
+stages:
+  - id: market_research
+    name: Commerce research
+    type: action
+    agent: research_connector_agent
+    permission: AUTONOMOUS
+    depends_on: []
+    produces: [demand_signals, supplier_inputs]
+
+  - id: product_validation
+    name: Product validation
+    type: action
+    agent: product_validation_agent
+    permission: AUTONOMOUS
+    depends_on: [market_research]
+    produces: [validation_outcome]
+
+  - id: product_validation_gate
+    name: Product validation gate
+    type: validation_gate
+    depends_on: [product_validation]
+    validation:
+      criteria:
+        - "Product validation outcome is VALIDATE under the configured rules."
+      gate_ids:
+        - product_validation_outcome
+        - minimum_evidence_completeness
+        - excessive_unknown_critical_fields
+      on_fail: request_more_research
+
+  - id: supplier_evidence
+    name: Supplier evidence
+    type: action
+    agent: supplier_research_agent
+    permission: AUTONOMOUS
+    depends_on: [product_validation_gate]
+    produces: [us_fulfillment_evidence_status]
+
+  - id: supplier_gate
+    name: Supplier evidence gate
+    type: validation_gate
+    depends_on: [supplier_evidence]
+    validation:
+      criteria:
+        - "Verified US fulfillment evidence is required."
+      gate_ids:
+        - supplier_evidence_requirement
+      on_fail: request_more_research
+
+  - id: unit_economics
+    name: Unit economics
+    type: action
+    agent: unit_economics_agent
+    permission: AUTONOMOUS
+    depends_on: [supplier_gate]
+    produces: [unit_economics]
+
+  - id: economics_gate
+    name: Unit economics gate
+    type: validation_gate
+    depends_on: [unit_economics]
+    validation:
+      criteria:
+        - "Required economics inputs are present."
+        - "When gross margin is computable, it meets the configured default threshold."
+      gate_ids:
+        - economics_completeness
+        - margin_threshold
+      on_fail: halt
+
+  - id: compliance_screen
+    name: Compliance and IP screening
+    type: action
+    agent: compliance_ip_screening_agent
+    permission: AUTONOMOUS
+    depends_on: [economics_gate]
+    produces: [risk_findings]
+
+  - id: compliance_gate
+    name: Compliance and IP gate
+    type: validation_gate
+    depends_on: [compliance_screen]
+    validation:
+      criteria:
+        - "Trademark, copyright, and prohibited-product status are clear."
+      gate_ids:
+        - unresolved_ip_risk
+        - unresolved_prohibited_product_risk
+      on_fail: escalate
+
+  - id: listing_draft
+    name: Listing draft
+    type: action
+    agent: listing_draft_agent
+    permission: AUTONOMOUS
+    depends_on: [compliance_gate]
+    produces: [listing_draft]
+
+  - id: compile_dossier
+    name: Compile opportunity dossier
+    type: action
+    agent: opportunity_dossier_agent
+    permission: AUTONOMOUS
+    depends_on: [listing_draft]
+    produces: [dossier]
+
+  - id: human_review
+    name: Human review gate
+    type: approval_gate
+    depends_on: [compile_dossier]
+    approval:
+      approver: human_owner
+      description: >-
+        Review the dropshipping dossier and unpublished listing draft.
+        Approval does not contact a supplier, publish a product, or spend money.

@@ -15,7 +15,10 @@ PACKAGE_DIR = Path(__file__).resolve().parent
 SCHEMAS_DIR = PACKAGE_DIR / "schemas"
 AGENT_SPECS_DIR = PACKAGE_DIR / "specs" / "agents"
 WORKFLOW_SPECS_DIR = PACKAGE_DIR / "specs" / "workflows"
+CONNECTOR_SPECS_DIR = PACKAGE_DIR / "specs" / "connectors"
 FIXTURES_DIR = PACKAGE_DIR / "fixtures"
+RESEARCH_PACKETS_DIR = PACKAGE_DIR / "fixtures" / "research"
+CONNECTOR_MOCKS_DIR = PACKAGE_DIR / "connectors" / "mocks"
 
 
 def repo_root(start: Optional[Path] = None) -> Path:

@@ -1,0 +1,25 @@
+id: service_communication_draft_agent
+name: Service Communication Draft Agent
+version: 0.3.0
+role: Service Communication Draft Agent
+division: digital_services
+status: active
+description: >-
+  Drafts a revision reply or a complaint response. The draft is not sent.
+  Complaints and refund requests are marked for human escalation. No refund
+  is issued.
+default_permission: AUTONOMOUS
+capabilities:
+  - message_draft
+inputs:
+  - { name: service_research, type: object, required: true, description: "Service research handoff." }
+outputs:
+  - { name: draft, type: object, description: "Unsent message draft." }
+  - { name: requires_human_approval_to_send, type: boolean, description: "Always true." }
+consumes_from: [service_research_agent, service_workflow_agent]
+evidence_requirements:
+  - "Draft text is an assumption, not a sent message."
+  - "requires_human_approval_to_send stays true."
+escalation_triggers:
+  - "The research handoff requests a refund or records a complaint."
+tags: [draft, digital_services, phase3, fiverr]

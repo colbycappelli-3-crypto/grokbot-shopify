@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokbot.commerce/schemas/research_connector.schema.json",
+  "title": "GROKBOT Research Connector",
+  "description": "Read-only or mock connector interface. Phase 3 connectors do not accept credentials or perform external actions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "version",
+    "mode",
+    "access",
+    "divisions",
+    "operations_allowed",
+    "operations_forbidden",
+    "credentials_required",
+    "production_connected",
+    "description"
+  ],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*$" },
+    "name": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "mode": { "type": "string", "enum": ["mock", "read_only"] },
+    "access": { "type": "string", "const": "read_only" },
+    "divisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": ["shared", "print_on_demand", "us_dropshipping", "digital_services"]
+      }
+    },
+    "operations_allowed": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["search", "describe"] },
+      "minItems": 1
+    },
+    "operations_forbidden": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "credentials_required": { "type": "boolean", "const": false },
+    "production_connected": { "type": "boolean", "const": false },
+    "description": { "type": "string", "minLength": 1 }
+  }
+}

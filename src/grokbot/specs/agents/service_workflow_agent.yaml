@@ -1,0 +1,24 @@
+id: service_workflow_agent
+name: Service Workflow Agent
+version: 0.3.0
+role: Service Workflow Agent
+division: digital_services
+status: active
+description: >-
+  Prepares local project and task state for a service engagement. Tasks stay
+  in draft. Nothing is delivered to a customer.
+default_permission: AUTONOMOUS
+capabilities:
+  - task_state_draft
+inputs:
+  - { name: service_research, type: object, required: true, description: "Service research handoff." }
+outputs:
+  - { name: tasks, type: array, description: "Local task states." }
+  - { name: project_state, type: string, description: "prepared_not_delivered in this phase." }
+consumes_from: [service_research_agent]
+evidence_requirements:
+  - "Customer message status stays not_sent."
+  - "Refund status stays not_issued or not_requested."
+escalation_triggers:
+  - "A task would send a message or issue a refund."
+tags: [workflow, digital_services, phase3, fiverr]

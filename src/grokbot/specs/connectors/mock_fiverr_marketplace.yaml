@@ -1,0 +1,25 @@
+id: mock_fiverr_marketplace
+name: Mock Fiverr Marketplace
+version: 0.3.0
+mode: mock
+access: read_only
+divisions: [digital_services]
+operations_allowed: [search, describe]
+operations_forbidden:
+  - publish
+  - purchase
+  - create_order
+  - place_order
+  - send_message
+  - refund
+  - launch_store
+  - contact_supplier
+  - update_product
+  - create_listing
+  - modify_shopify
+  - connect
+credentials_required: false
+production_connected: false
+description: >-
+  TEST/MOCK service-offer labels. This connector does not sign in to Fiverr,
+  message anyone, place an order, or issue a refund.

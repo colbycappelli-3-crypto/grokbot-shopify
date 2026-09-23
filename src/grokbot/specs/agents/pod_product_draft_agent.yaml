@@ -1,0 +1,24 @@
+id: pod_product_draft_agent
+name: POD Product Draft Agent
+version: 0.3.0
+role: POD Product Draft Agent
+division: print_on_demand
+status: active
+description: >-
+  Prepares unpublished TEST/MOCK drafts for shirts, hats, and related products.
+  It does not launch a store, write a production catalog, or publish a product.
+default_permission: AUTONOMOUS
+capabilities:
+  - product_draft
+inputs:
+  - { name: market_research, type: object, required: true, description: "Upstream research handoff." }
+outputs:
+  - { name: drafts, type: array, description: "Unpublished shirt and hat drafts." }
+  - { name: publish_status, type: string, description: "Always not_published in this phase." }
+consumes_from: [research_connector_agent, market_research_agent]
+evidence_requirements:
+  - "Draft titles are assumptions, not verified products."
+  - "store_launched and catalog_written stay false."
+escalation_triggers:
+  - "A draft would require publishing or opening a POD account."
+tags: [draft, print_on_demand, phase3]

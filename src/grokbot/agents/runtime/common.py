@@ -7,7 +7,14 @@ from ...protocol.knowledge import claim
 from ...protocol.models import Job, simulation_confidence
 
 
-FIXTURE_AGENTS = frozenset({"trend_discovery_agent", "market_research_agent"})
+FIXTURE_AGENTS = frozenset(
+    {
+        "trend_discovery_agent",
+        "market_research_agent",
+        "research_connector_agent",
+        "service_research_agent",
+    }
+)
 
 
 def stage_output(job: Job, stage_id: str) -> Dict[str, Any]:

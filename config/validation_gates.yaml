@@ -3,7 +3,7 @@
 # These thresholds are owner-editable defaults for offline screening.
 # They are not universal business rules. Agent code reads this file;
 # it does not hard-code the numbers below.
-version: "1.0.0"
+version: "1.1.0"
 label: configurable_defaults
 notice: >-
   Thresholds in this file are configurable defaults for Phase 2 offline
@@ -85,3 +85,12 @@ gates:
       The product-validation stage must return VALIDATE. RESEARCH_FURTHER and
       REJECT fail this gate with the agent's machine-readable criteria.
     required_outcome: VALIDATE
+
+  service_delivery_readiness:
+    description: >-
+      Digital-services research may prepare a workflow and a message draft.
+      The gate passes only when the offer is known, no message was sent, and
+      no refund was issued. A refund or complaint request escalates. Sending,
+      ordering, and refunding stay blocked. Other divisions do not use this gate.
+    applies_to_divisions:
+      - digital_services
