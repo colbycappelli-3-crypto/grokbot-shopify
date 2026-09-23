@@ -1,13 +1,12 @@
 """GROKBOT COMMERCE — master orchestrator foundation.
 
-This package contains the control-system foundation for an autonomous
-multi-agent commerce platform. In this phase it intentionally performs no
-external actions, connects to no production services, and starts no autonomous
-processes.
+This package contains the control system for a multi-agent commerce platform.
+The current phase performs no external actions, connects no production
+credentials, and starts no autonomous processes.
 """
 from __future__ import annotations
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 from .agents.registry import AgentRegistry, AgentSpec
 from .orchestrator.orchestrator import Orchestrator, Plan, PlannedTask

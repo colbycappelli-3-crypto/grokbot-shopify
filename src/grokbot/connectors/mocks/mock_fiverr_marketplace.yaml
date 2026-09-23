@@ -1,0 +1,116 @@
+connector_id: mock_fiverr_marketplace
+data_classification: TEST_MOCK
+banner: "TEST/MOCK DATA — fictional service offers. No Fiverr message, order, or refund was made."
+queries:
+  revision-gig:
+    data_classification: TEST_MOCK
+    unknowns: []
+    evidence:
+      - evidence_id: ev-p3-fiverr-demand-1
+        source_type: mock
+        source_reference: "MOCK:connector/mock_fiverr_marketplace#revision-gig"
+        claim_supported: "TEST/MOCK demand label for mock gig mock-gig-001."
+        collected_by: mock_fiverr_marketplace
+        verification_status: verified
+        notes: "TEST/MOCK marketplace result. Not a live Fiverr gig."
+    payload:
+      offer_known: true
+      gig_id: mock-gig-001
+      requests_revision: true
+      requests_refund: false
+      complaint: false
+      service_offer:
+        claim_id: fiverr-offer-1
+        field: service_offer
+        statement: "TEST/MOCK gig mock-gig-001 is a product-description writing concept. No order was placed."
+        epistemic_status: INFERENCE
+        evidence_ids: []
+      demand_present: true
+      demand_present_epistemic_status: FACT
+      demand_present_evidence_ids: [ev-p3-fiverr-demand-1]
+      demand_signals:
+        - claim_id: fiverr-demand-1
+          field: demand
+          statement: "TEST/MOCK packet includes one verified mock demand label for this service concept."
+          epistemic_status: FACT
+          evidence_ids: [ev-p3-fiverr-demand-1]
+      customer_hypothesis:
+        claim_id: fiverr-customer-1
+        field: target_customer
+        statement: "TEST/MOCK hypothesis: small shops that want product descriptions. Not a verified client study."
+        epistemic_status: INFERENCE
+        evidence_ids: []
+      competitive_context:
+        claim_id: fiverr-competition-1
+        field: competition
+        statement: "TEST/MOCK competitive context: similar writing offers exist in the packet."
+        epistemic_status: INFERENCE
+        evidence_ids: []
+      pricing_context:
+        claim_id: fiverr-pricing-1
+        field: pricing_context
+        statement: "TEST/MOCK scenario price was not treated as a live Fiverr price."
+        epistemic_status: INFERENCE
+        evidence_ids: []
+      seasonality:
+        claim_id: fiverr-season-1
+        field: seasonality
+        statement: "Seasonality was not supplied."
+        epistemic_status: UNKNOWN
+        evidence_ids: []
+  complaint-refund:
+    data_classification: TEST_MOCK
+    unknowns: []
+    evidence:
+      - evidence_id: ev-p3-fiverr-complaint-1
+        source_type: mock
+        source_reference: "MOCK:connector/mock_fiverr_marketplace#complaint-refund"
+        claim_supported: "TEST/MOCK complaint label for mock gig mock-gig-001."
+        collected_by: mock_fiverr_marketplace
+        verification_status: verified
+        notes: "TEST/MOCK complaint. No refund was issued."
+    payload:
+      offer_known: true
+      gig_id: mock-gig-001
+      requests_revision: false
+      requests_refund: true
+      complaint: true
+      service_offer:
+        claim_id: fiverr-offer-complaint
+        field: service_offer
+        statement: "TEST/MOCK complaint about mock gig mock-gig-001. No message was sent and no refund was issued."
+        epistemic_status: INFERENCE
+        evidence_ids: [ev-p3-fiverr-complaint-1]
+      demand_present: true
+      demand_present_epistemic_status: FACT
+      demand_present_evidence_ids: [ev-p3-fiverr-complaint-1]
+      demand_signals:
+        - claim_id: fiverr-complaint-demand
+          field: demand
+          statement: "TEST/MOCK packet includes a complaint label, not a live customer."
+          epistemic_status: FACT
+          evidence_ids: [ev-p3-fiverr-complaint-1]
+      customer_hypothesis:
+        claim_id: fiverr-customer-complaint
+        field: target_customer
+        statement: "TEST/MOCK hypothesis: a fictional buyer asked for a refund."
+        epistemic_status: INFERENCE
+        evidence_ids: []
+      competitive_context:
+        claim_id: fiverr-competition-complaint
+        field: competition
+        statement: "TEST/MOCK competitive context was not re-researched for this complaint."
+        epistemic_status: INFERENCE
+        evidence_ids: []
+      pricing_context:
+        claim_id: fiverr-pricing-complaint
+        field: pricing_context
+        statement: "TEST/MOCK price context was not treated as a live charge."
+        epistemic_status: INFERENCE
+        evidence_ids: []
+      seasonality:
+        claim_id: fiverr-season-complaint
+        field: seasonality
+        statement: "Seasonality was not supplied."
+        epistemic_status: UNKNOWN
+        evidence_ids: []

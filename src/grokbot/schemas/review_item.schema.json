@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokbot.commerce/schemas/review_item.schema.json",
+  "title": "GROKBOT Review Item",
+  "description": "One human-review queue item. A decision never carries an executed external action.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "review_id",
+    "project_id",
+    "workflow_id",
+    "division",
+    "status",
+    "objective",
+    "data_classification",
+    "banner",
+    "recommendations",
+    "unknowns",
+    "risks",
+    "dossier_id",
+    "summary",
+    "approval_block_reason",
+    "decision",
+    "consequential_actions_performed",
+    "created_at"
+  ],
+  "properties": {
+    "review_id": { "type": "string", "pattern": "^rev-[a-z0-9]+$" },
+    "project_id": { "type": "string", "minLength": 1 },
+    "workflow_id": { "type": "string", "minLength": 1 },
+    "division": { "type": "string", "minLength": 1 },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "approved", "denied", "research_requested"]
+    },
+    "objective": { "type": "string", "minLength": 1 },
+    "data_classification": { "type": "string", "enum": ["TEST_MOCK", "UNSOURCED"] },
+    "banner": { "type": "string", "minLength": 1 },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["agent_id", "stage_id", "recommended_next_action", "summary"],
+        "properties": {
+          "agent_id": { "type": "string" },
+          "stage_id": { "type": "string" },
+          "recommended_next_action": { "type": "string" },
+          "summary": { "type": "string" }
+        }
+      }
+    },
+    "unknowns": { "type": "array", "items": { "type": "string" } },
+    "risks": { "type": "array", "items": { "type": "string" } },
+    "dossier_id": { "type": ["string", "null"] },
+    "summary": { "type": "string", "minLength": 1 },
+    "approval_block_reason": { "type": ["string", "null"] },
+    "decision": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["decision", "note", "decided_by", "decided_at", "executed_external_action", "blocked_reason"],
+      "properties": {
+        "decision": {
+          "type": "string",
+          "enum": ["approved", "denied", "research_requested", "blocked"]
+        },
+        "note": { "type": "string" },
+        "decided_by": { "type": "string", "minLength": 1 },
+        "decided_at": { "type": "string", "minLength": 1 },
+        "executed_external_action": { "type": "boolean", "const": false },
+        "blocked_reason": { "type": ["string", "null"] }
+      }
+    },
+    "consequential_actions_performed": { "type": "array", "maxItems": 0 },
+    "created_at": { "type": "string", "minLength": 1 }
+  }
+}

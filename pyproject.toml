@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "grokbot-commerce"
-version = "0.2.0"
-description = "GROKBOT COMMERCE — offline multi-agent orchestrator and commerce-intelligence layer."
+version = "0.3.0"
+description = "GROKBOT COMMERCE — human review and read-only commerce research layer."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Proprietary" }
@@ -29,7 +29,10 @@ grokbot = [
   "schemas/*.json",
   "specs/agents/*.yaml",
   "specs/workflows/*.yaml",
+  "specs/connectors/*.yaml",
   "fixtures/*.yaml",
+  "fixtures/research/*.yaml",
+  "connectors/mocks/*.yaml",
 ]
 
 [tool.pytest.ini_options]

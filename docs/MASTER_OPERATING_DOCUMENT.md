@@ -24,9 +24,9 @@ organized into three business divisions that share common infrastructure:
 
 **GROKBOT is the master orchestrator.** It coordinates specialized agents. Agents
 remain declarative specifications. Phase 2 attaches offline logical runtimes for
-the commerce-intelligence roles. Those runtimes are explicit functions over
-supplied inputs. They are not self-modifying processes and they do not call
-external services.
+the commerce-intelligence roles. Phase 3 adds read-only research runtimes and a
+human review queue. Those runtimes are explicit functions over supplied inputs.
+They are not self-modifying processes and they do not call external services.
 
 Logical agent roles the system is designed to support (added incrementally):
 Market Research, Trend Discovery, Product Validation, Supplier Research, Unit
@@ -124,11 +124,15 @@ particular, do not interact with any PoH Wallet project or repository.
 Phase 1 (foundation and control system) is merged. Phase 2 is the **offline
 orchestration and commerce-intelligence** layer: job handoffs, evidence,
 validation gates, dossiers, and two discovery workflows that stop at human
-review.
+review. Phase 3 is the **human review and commerce research** layer: a review
+queue, a read-only review page, and mock read-only connectors for
+print-on-demand drafts, US-dropshipping research, and Fiverr service drafts.
 
-Do NOT connect Shopify, Fiverr, suppliers, or payment systems. Do NOT purchase,
-publish, advertise, or message customers. Do NOT add real credentials. Do NOT
-start Phase 3 without explicit human approval.
+Do NOT connect production Shopify, Fiverr, supplier, or payment credentials.
+Do NOT purchase, publish, advertise, contact suppliers, message Fiverr users,
+place Fiverr orders, or issue refunds. Do NOT add real credentials. Do NOT
+start Phase 4 without explicit human approval. A recorded approval still does
+not execute a consequential action.
 
 ## 9. Standards for adding an agent or workflow
 

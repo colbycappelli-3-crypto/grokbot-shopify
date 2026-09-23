@@ -1,0 +1,26 @@
+id: listing_draft_agent
+name: Listing Draft Agent
+version: 0.3.0
+role: Listing Draft Agent
+division: us_dropshipping
+status: active
+description: >-
+  Prepares an unpublished Shopify listing draft from research and supplier
+  evidence. Fast shipping is not claimed as FACT. No supplier is contacted and
+  no listing is published.
+default_permission: AUTONOMOUS
+capabilities:
+  - listing_draft
+inputs:
+  - { name: market_research, type: object, required: true, description: "Upstream research handoff." }
+  - { name: supplier_evidence, type: object, required: true, description: "US fulfillment evidence handoff." }
+outputs:
+  - { name: shipping_claim, type: object, description: "Shipping-speed claim with an epistemic status." }
+  - { name: publish_status, type: string, description: "Always not_published in this phase." }
+consumes_from: [research_connector_agent, supplier_research_agent]
+evidence_requirements:
+  - "Fast domestic shipping is not a FACT unless transit time was actually measured."
+  - "commitment_made and supplier_contacted stay false."
+escalation_triggers:
+  - "US fulfillment evidence is missing."
+tags: [draft, us_dropshipping, phase3]

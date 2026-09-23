@@ -30,10 +30,13 @@ introduced, including:
 
 Do **not** connect to a production Shopify store, Fiverr account, payment
 provider, advertising account, supplier account, or any other external
-production service. Phase 2 simulations are offline. Consequential categories
-(store launch, purchase, supplier commitment, publication, advertising,
-customer messages) stay blocked even if a simulated approval is recorded.
-Prohibited categories still cannot be relaxed.
+production service. Phase 2 simulations are offline. Phase 3 connectors are
+mock or unconfigured read-only interfaces: they do not read credentials, do
+not place network calls, and refuse publish, purchase, order, message, refund,
+and supplier-contact operations. Consequential categories (store launch,
+purchase, supplier commitment, publication, advertising, customer messages,
+Fiverr orders, Fiverr contact, Shopify production changes) stay blocked even
+if a human approval is recorded. Prohibited categories still cannot be relaxed.
 
 ## Prohibited actions (never permitted)
 

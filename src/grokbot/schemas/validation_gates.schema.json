@@ -21,7 +21,8 @@
         "unresolved_ip_risk",
         "unresolved_prohibited_product_risk",
         "supplier_evidence_requirement",
-        "product_validation_outcome"
+        "product_validation_outcome",
+        "service_delivery_readiness"
       ],
       "properties": {
         "minimum_evidence_completeness": { "$ref": "#/$defs/min_evidence" },
@@ -31,7 +32,8 @@
         "unresolved_ip_risk": { "$ref": "#/$defs/risk_gate" },
         "unresolved_prohibited_product_risk": { "$ref": "#/$defs/single_risk" },
         "supplier_evidence_requirement": { "$ref": "#/$defs/supplier" },
-        "product_validation_outcome": { "$ref": "#/$defs/outcome" }
+        "product_validation_outcome": { "$ref": "#/$defs/outcome" },
+        "service_delivery_readiness": { "$ref": "#/$defs/service_delivery" }
       }
     }
   },
@@ -123,6 +125,15 @@
       "properties": {
         "description": { "type": "string" },
         "required_outcome": { "type": "string", "enum": ["VALIDATE", "RESEARCH_FURTHER", "REJECT"] }
+      }
+    },
+    "service_delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "applies_to_divisions"],
+      "properties": {
+        "description": { "type": "string" },
+        "applies_to_divisions": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
       }
     }
   }

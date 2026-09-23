@@ -1,0 +1,13 @@
+packet_id: pod_research_ready
+data_classification: TEST_MOCK
+banner: "TEST/MOCK DATA — fabricated for offline research. Not real market, supplier, sales, or catalog information."
+workflow_id: pod_research_review
+division: print_on_demand
+objective: "Research a TEST/MOCK print-on-demand shirt and hat concept and stop for human review."
+business_model: print_on_demand
+niche_hypothesis: "TEST/MOCK niche: constellation-cat graphic shirts and hats."
+assumptions:
+  - "TEST/MOCK assumption: scenario costs are supplied inputs, not supplier quotes."
+connector_requests:
+  - { connector_id: mock_market_signals, operation: search, query_id: pod-shirt-ready }
+  - { connector_id: mock_shopify_catalog, operation: describe, query_id: pod-draft-catalog }

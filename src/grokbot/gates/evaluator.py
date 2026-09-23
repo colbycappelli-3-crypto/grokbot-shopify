@@ -26,6 +26,9 @@ def build_gate_context(run: Any) -> Dict[str, Any]:
     economics = run.outputs.get("unit_economics") or {}
     compliance = run.outputs.get("compliance_screen") or {}
     supplier = run.outputs.get("supplier_evidence") or {}
+    service = run.outputs.get("service_research") or {}
+    communication = run.outputs.get("communication_draft") or {}
+    service_workflow = run.outputs.get("service_workflow") or {}
     critical = list(
         run.gate_config["gates"]["excessive_unknown_critical_fields"]["critical_fields"]
     )
@@ -44,6 +47,9 @@ def build_gate_context(run: Any) -> Dict[str, Any]:
         "gross_margin": margin if isinstance(margin, (int, float)) else None,
         "compliance": compliance,
         "supplier": supplier,
+        "service": service,
+        "communication": communication,
+        "service_workflow": service_workflow,
     }
 
 
@@ -239,6 +245,52 @@ def _evaluate(gate_id: str, spec: Dict[str, Any], context: Dict[str, Any]) -> Li
             ]
         return []
 
+    if gate_id == "service_delivery_readiness":
+        if context.get("division") not in spec["applies_to_divisions"]:
+            return [
+                _info(
+                    "service_delivery_readiness_not_applicable",
+                    "This division does not use the digital-services delivery gate.",
+                )
+            ]
+        service = context.get("service") or {}
+        communication = context.get("communication") or {}
+        workflow = context.get("service_workflow") or {}
+        sent = any(
+            source.get("message_sent") is True for source in (service, communication, workflow)
+        )
+        refunded = any(
+            source.get("refund_issued") is True for source in (service, communication, workflow)
+        )
+        if sent or refunded:
+            return [
+                _reason(
+                    "consequential_service_action_recorded",
+                    "A message send or refund was recorded. The gate fails closed and does not continue.",
+                    field="message_sent" if sent else "refund_issued",
+                    observed=True,
+                )
+            ]
+        if service.get("requests_refund") is True or service.get("complaint") is True:
+            return [
+                _reason(
+                    "service_refund_request_requires_escalation",
+                    "A refund or complaint request is present. No refund was issued and no message was sent.",
+                    field="requests_refund" if service.get("requests_refund") else "complaint",
+                    observed=True,
+                )
+            ]
+        if service.get("offer_known") is not True:
+            return [
+                _reason(
+                    "service_offer_unknown",
+                    "The service offer is UNKNOWN. No offer was invented.",
+                    field="service_offer",
+                    observed="UNKNOWN",
+                )
+            ]
+        return []
+
     return [_reason("unknown_gate", f"No evaluator is registered for gate '{gate_id}'.")]
 
 
@@ -250,6 +302,12 @@ def select_on_fail(default: str, evaluations: List[dict], validation_outcome: st
         for reason in evaluation["reasons"]
         if reason["severity"] == "fail"
     }
+    if "consequential_service_action_recorded" in codes:
+        return "halt"
+    if "service_refund_request_requires_escalation" in codes:
+        return "escalate"
+    if "service_offer_unknown" in codes:
+        return "request_more_research"
     if validation_outcome == "REJECT" or "verified_demand_absent" in codes or "prohibited_product_confirmed" in codes:
         return "reject"
     if (

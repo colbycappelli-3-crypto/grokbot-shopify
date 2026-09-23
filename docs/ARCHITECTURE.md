@@ -43,12 +43,14 @@ this phase.
 | Project state | `src/grokbot/state/` | Auditable per-project state: stages, evidence, decisions, approvals, escalations. |
 | Orchestrator | `src/grokbot/orchestrator/` | Plan a workflow, or run it offline: create jobs, delegate to logical agents, enforce dependencies, evaluate gates, and stop at human review. |
 | Job protocol | `src/grokbot/protocol/` | Structured jobs, agent results, and FACT / INFERENCE / ASSUMPTION / UNKNOWN labels. |
-| Evidence ledger | `src/grokbot/evidence/` | Provenance records. Phase 2 records are marked TEST/MOCK. |
+| Evidence ledger | `src/grokbot/evidence/` | Provenance records. Records are marked TEST/MOCK. |
 | Validation gates | `src/grokbot/gates/` + `config/validation_gates.yaml` | Configurable screening rules with machine-readable failure reasons. |
 | Dossier | `src/grokbot/dossier/` | Aggregated opportunity dossier. Negative evidence stays visible. |
 | Audit log | `src/grokbot/audit/` | Structured events for projects, jobs, evidence, gates, stops, and approvals. |
-| CLI | `src/grokbot/cli.py` | `grokbot validate`, `grokbot plan <workflow>`. |
-| Specs (data) | `src/grokbot/specs/` | Example agent and workflow specifications. |
+| Connectors | `src/grokbot/connectors/` | Read-only research interfaces. Shipped connectors are mocks. |
+| Human review | `src/grokbot/review/` | Local review queue and a GET-only HTML page. Decisions do not execute. |
+| CLI | `src/grokbot/cli.py` | `validate`, `plan`, `simulate`, `research`, and `review`. |
+| Specs (data) | `src/grokbot/specs/` | Agent, workflow, and connector specifications. |
 
 ## Shared infrastructure vs. specialized workflows
 
@@ -70,9 +72,9 @@ engine.
 
 | Division | Specialized workflow(s) | Reuses (shared) |
 | --- | --- | --- |
-| Print-on-Demand | `pod_opportunity_discovery` (offline, stops at human review). `pod_product_concept` remains the Phase 1 planning workflow. | Trend Discovery, Market Research, Product Validation, Unit Economics, Compliance/IP Screening, Opportunity Dossier |
-| US Dropshipping | `us_dropshipping_opportunity_discovery` (offline, stops at human review). `us_dropshipping_opportunity` remains the Phase 1 planning workflow. | The shared discovery agents, plus preliminary Supplier Research over TEST/MOCK fulfillment evidence |
-| Digital Services / Fiverr | (future) | Customer Service, Quality Assurance, plus shared drafting/analysis agents |
+| Print-on-Demand | `pod_opportunity_discovery` (Phase 2, stops at human review) and `pod_research_review` (Phase 3 read-only research plus unpublished shirt/hat drafts). `pod_product_concept` remains the Phase 1 planning workflow. | Trend Discovery, Market Research, Product Validation, Unit Economics, Compliance/IP Screening, Opportunity Dossier, Research Connector, POD Product Draft |
+| US Dropshipping | `us_dropshipping_opportunity_discovery` (Phase 2) and `us_dropship_research_review` (Phase 3 mock US-warehouse research plus an unpublished listing draft). `us_dropshipping_opportunity` remains the Phase 1 planning workflow. | The shared discovery agents, Supplier Research, Listing Draft |
+| Digital Services / Fiverr | `fiverr_service_research_review` prepares a service workflow and an unsent draft. Complaints and refund requests escalate. | Service Research, Service Workflow, Service Communication Draft. Customer Service remains non-executable because sending a message is consequential. |
 
 ### Extension points
 
@@ -102,6 +104,7 @@ engine.
 
 ## Non-goals for this phase
 
-No Shopify/Fiverr/payment/ad/supplier connections, no deployment, no purchases,
-no publication, no autonomous background processes, and no real credentials.
-Offline simulations stop at human review and cannot execute consequential actions.
+No production Shopify, Fiverr, payment, advertising, or supplier credentials.
+No purchases, publication, supplier contact, customer messages, Fiverr orders,
+or refunds. Research connectors are read-only or mocked. Human approval is
+recorded and does not execute a consequential action.

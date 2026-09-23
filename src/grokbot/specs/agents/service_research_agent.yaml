@@ -1,0 +1,25 @@
+id: service_research_agent
+name: Service Research Agent
+version: 0.3.0
+role: Service Research Agent
+division: digital_services
+status: active
+description: >-
+  Researches TEST/MOCK service opportunities through the read-only Fiverr
+  connector. It does not place orders, message customers, or issue refunds.
+default_permission: AUTONOMOUS
+capabilities:
+  - service_opportunity_research
+inputs:
+  - { name: connector_requests, type: array, required: true, description: "Read-only connector queries." }
+outputs:
+  - { name: service_offer, type: object, description: "Service offer label, or UNKNOWN when missing." }
+  - { name: offer_known, type: boolean, description: "True only when the connector supplied an offer." }
+consumes_from: []
+evidence_requirements:
+  - "A missing offer stays UNKNOWN."
+  - "message_sent, refund_issued, and order_placed stay false."
+escalation_triggers:
+  - "The offer is UNKNOWN."
+  - "The packet describes a complaint or refund request."
+tags: [research, digital_services, phase3, fiverr]

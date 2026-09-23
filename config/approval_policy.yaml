@@ -5,7 +5,7 @@
 # cannot be relaxed at runtime (enforced in code).
 #
 # default_class is the fail-safe applied to any category not listed here.
-version: "1.0.0"
+version: "1.1.0"
 default_class: APPROVAL_REQUIRED
 owner_can_override: true
 
@@ -45,6 +45,8 @@ rules:
   - { category: ip_screening, class: AUTONOMOUS }
   - { category: analytics_reporting, class: AUTONOMOUS }
   - { category: prepare_customer_message_draft, class: AUTONOMOUS }
+  - { category: commerce_research_read, class: AUTONOMOUS }
+  - { category: review_queue_update, class: AUTONOMOUS }
 
   # ---- APPROVAL_REQUIRED: material external actions ----
   - { category: publish_external_content, class: APPROVAL_REQUIRED }
@@ -56,6 +58,10 @@ rules:
   - { category: send_customer_message, class: APPROVAL_REQUIRED }
   - { category: customer_refund, class: APPROVAL_REQUIRED }
   - { category: connect_external_account, class: APPROVAL_REQUIRED }
+  - { category: place_fiverr_order, class: APPROVAL_REQUIRED }
+  - { category: contact_fiverr_user, class: APPROVAL_REQUIRED }
+  - { category: modify_shopify_production, class: APPROVAL_REQUIRED }
+  - { category: contact_supplier, class: APPROVAL_REQUIRED }
 
   # ---- PROHIBITED: never permitted ----
   - { category: expose_credentials, class: PROHIBITED }

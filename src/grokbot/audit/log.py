@@ -26,6 +26,8 @@ AUDIT_EVENT_TYPES = (
     "action_blocked",
     "retry_scheduled",
     "decision_recorded",
+    "review_enqueued",
+    "review_decision",
 )
 
 _SECRET_KEY = re.compile(

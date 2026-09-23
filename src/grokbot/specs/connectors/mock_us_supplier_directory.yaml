@@ -1,0 +1,25 @@
+id: mock_us_supplier_directory
+name: Mock US Supplier Directory
+version: 0.3.0
+mode: mock
+access: read_only
+divisions: [us_dropshipping]
+operations_allowed: [search, describe]
+operations_forbidden:
+  - publish
+  - purchase
+  - create_order
+  - place_order
+  - send_message
+  - refund
+  - launch_store
+  - contact_supplier
+  - update_product
+  - create_listing
+  - modify_shopify
+  - connect
+credentials_required: false
+production_connected: false
+description: >-
+  TEST/MOCK directory of fictional US-warehouse labels. It does not contact
+  suppliers or record a commitment.

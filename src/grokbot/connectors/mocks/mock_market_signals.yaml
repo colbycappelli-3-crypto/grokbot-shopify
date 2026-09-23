@@ -1,0 +1,201 @@
+connector_id: mock_market_signals
+data_classification: TEST_MOCK
+banner: "TEST/MOCK DATA — fabricated connector responses. Not real demand, sales, or competitor information."
+queries:
+  pod-shirt-ready:
+    data_classification: TEST_MOCK
+    unknowns: []
+    evidence:
+      - evidence_id: ev-p3-pod-demand-1
+        source_type: mock
+        source_reference: "MOCK:connector/mock_market_signals#pod-shirt-ready-demand"
+        claim_supported: "TEST/MOCK demand signal for constellation-cat shirts."
+        collected_by: mock_market_signals
+        verification_status: verified
+        notes: "TEST/MOCK connector result. Not a live source."
+      - evidence_id: ev-p3-pod-price-1
+        source_type: mock
+        source_reference: "MOCK:connector/mock_market_signals#pod-shirt-ready-price"
+        claim_supported: "TEST/MOCK scenario price for constellation-cat shirts."
+        collected_by: mock_market_signals
+        verification_status: verified
+        notes: "TEST/MOCK connector result. Not an observed market price."
+    payload:
+      demand_present: true
+      demand_present_epistemic_status: FACT
+      demand_present_evidence_ids: [ev-p3-pod-demand-1]
+      demand_signals:
+        - claim_id: pod-demand-1
+          field: demand
+          statement: "TEST/MOCK packet includes one verified mock demand signal for constellation-cat shirts."
+          epistemic_status: FACT
+          evidence_ids: [ev-p3-pod-demand-1]
+      customer_hypothesis:
+        claim_id: pod-customer-1
+        field: target_customer
+        statement: "TEST/MOCK hypothesis: adult gift buyers. This is an inference, not a verified customer study."
+        epistemic_status: INFERENCE
+        evidence_ids: []
+      competitive_context:
+        claim_id: pod-competition-1
+        field: competition
+        statement: "TEST/MOCK competitive context: similar graphic-shirt concepts exist in the packet."
+        epistemic_status: INFERENCE
+        evidence_ids: []
+      pricing_context:
+        claim_id: pod-pricing-1
+        field: pricing_context
+        statement: "TEST/MOCK scenario price is a supplied simulation input, not an observed market price."
+        epistemic_status: FACT
+        evidence_ids: [ev-p3-pod-price-1]
+      seasonality:
+        claim_id: pod-season-1
+        field: seasonality
+        statement: "Seasonality was not supplied."
+        epistemic_status: UNKNOWN
+        evidence_ids: []
+      market_risks:
+        - claim_id: pod-risk-1
+          field: market_risk
+          statement: "TEST/MOCK assumption: gift demand could be occasion-driven."
+          epistemic_status: ASSUMPTION
+          evidence_ids: []
+      economics:
+        currency: USD
+        selling_price: 32.0
+        product_cost: 10.0
+        shipping: 3.0
+        platform_fees: 1.5
+        payment_fees: 1.2
+        fulfillment_cost: 2.0
+        fixed_costs: null
+      compliance:
+        trademark_risk: clear
+        copyright_risk: clear
+        prohibited_product_risk: clear
+        deceptive_marketing_risk: clear
+        platform_policy_risk: clear
+        findings: []
+      supplier:
+        applicable: false
+        us_fulfillment_evidence_status: unknown
+        statement: "TEST/MOCK: print-on-demand research does not contact a supplier."
+        epistemic_status: UNKNOWN
+        evidence_ids: []
+        commitment_made: false
+        candidate_suppliers: []
+  pod-demand-unknown:
+    data_classification: TEST_MOCK
+    unknowns: ["Demand was not supplied."]
+    evidence:
+      - evidence_id: ev-p3-pod-price-unknown-path
+        source_type: mock
+        source_reference: "MOCK:connector/mock_market_signals#pod-demand-unknown-price"
+        claim_supported: "TEST/MOCK scenario price with no demand evidence."
+        collected_by: mock_market_signals
+        verification_status: verified
+        notes: "TEST/MOCK connector result."
+    payload:
+      demand_present: null
+      demand_present_epistemic_status: UNKNOWN
+      demand_present_evidence_ids: []
+      demand_signals: []
+      customer_hypothesis:
+        claim_id: pod-customer-unknown-path
+        field: target_customer
+        statement: "TEST/MOCK hypothesis: adult gift buyers. Demand itself was not supplied."
+        epistemic_status: INFERENCE
+        evidence_ids: []
+      competitive_context:
+        claim_id: pod-competition-unknown-path
+        field: competition
+        statement: "TEST/MOCK competitive context was supplied without a demand signal."
+        epistemic_status: INFERENCE
+        evidence_ids: []
+      pricing_context:
+        claim_id: pod-pricing-unknown-path
+        field: pricing_context
+        statement: "TEST/MOCK scenario price is a supplied simulation input."
+        epistemic_status: FACT
+        evidence_ids: [ev-p3-pod-price-unknown-path]
+      seasonality:
+        claim_id: pod-season-unknown-path
+        field: seasonality
+        statement: "Seasonality was not supplied."
+        epistemic_status: UNKNOWN
+        evidence_ids: []
+      compliance:
+        trademark_risk: clear
+        copyright_risk: clear
+        prohibited_product_risk: clear
+        deceptive_marketing_risk: clear
+        platform_policy_risk: clear
+        findings: []
+  dropship-clip-ready:
+    data_classification: TEST_MOCK
+    unknowns: []
+    evidence:
+      - evidence_id: ev-p3-drop-demand-1
+        source_type: mock
+        source_reference: "MOCK:connector/mock_market_signals#dropship-clip-demand"
+        claim_supported: "TEST/MOCK demand signal for a desk cable clip."
+        collected_by: mock_market_signals
+        verification_status: verified
+        notes: "TEST/MOCK connector result. Not a live source."
+      - evidence_id: ev-p3-drop-price-1
+        source_type: mock
+        source_reference: "MOCK:connector/mock_market_signals#dropship-clip-price"
+        claim_supported: "TEST/MOCK scenario price for a desk cable clip."
+        collected_by: mock_market_signals
+        verification_status: verified
+        notes: "TEST/MOCK connector result. Not an observed market price."
+    payload:
+      demand_present: true
+      demand_present_epistemic_status: FACT
+      demand_present_evidence_ids: [ev-p3-drop-demand-1]
+      demand_signals:
+        - claim_id: drop-demand-1
+          field: demand
+          statement: "TEST/MOCK packet includes one verified mock demand signal for a desk cable clip."
+          epistemic_status: FACT
+          evidence_ids: [ev-p3-drop-demand-1]
+      customer_hypothesis:
+        claim_id: drop-customer-1
+        field: target_customer
+        statement: "TEST/MOCK hypothesis: home-office buyers. Not a verified customer study."
+        epistemic_status: INFERENCE
+        evidence_ids: []
+      competitive_context:
+        claim_id: drop-competition-1
+        field: competition
+        statement: "TEST/MOCK competitive context: similar cable clips exist in the packet."
+        epistemic_status: INFERENCE
+        evidence_ids: []
+      pricing_context:
+        claim_id: drop-pricing-1
+        field: pricing_context
+        statement: "TEST/MOCK scenario price is a supplied simulation input, not an observed market price."
+        epistemic_status: FACT
+        evidence_ids: [ev-p3-drop-price-1]
+      seasonality:
+        claim_id: drop-season-1
+        field: seasonality
+        statement: "Seasonality was not supplied."
+        epistemic_status: UNKNOWN
+        evidence_ids: []
+      economics:
+        currency: USD
+        selling_price: 32.0
+        product_cost: 10.0
+        shipping: 3.0
+        platform_fees: 1.5
+        payment_fees: 1.2
+        fulfillment_cost: 2.0
+        fixed_costs: null
+      compliance:
+        trademark_risk: clear
+        copyright_risk: clear
+        prohibited_product_risk: clear
+        deceptive_marketing_risk: clear
+        platform_policy_risk: clear
+        findings: []

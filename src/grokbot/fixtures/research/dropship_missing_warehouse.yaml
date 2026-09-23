@@ -1,0 +1,13 @@
+packet_id: dropship_missing_warehouse
+data_classification: TEST_MOCK
+banner: "TEST/MOCK DATA — US warehouse evidence is missing on purpose. No supplier was contacted."
+workflow_id: us_dropship_research_review
+division: us_dropshipping
+objective: "Research a TEST/MOCK dropshipping product that lacks US warehouse evidence."
+business_model: us_dropshipping
+niche_hypothesis: "TEST/MOCK niche: desk cable clip with no US warehouse evidence."
+assumptions:
+  - "TEST/MOCK assumption: missing warehouse evidence must fail the supplier gate."
+connector_requests:
+  - { connector_id: mock_market_signals, operation: search, query_id: dropship-clip-ready }
+  - { connector_id: mock_us_supplier_directory, operation: describe, query_id: warehouse-not-in-packet }

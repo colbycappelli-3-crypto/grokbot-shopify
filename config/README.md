@@ -17,5 +17,10 @@ Notes:
 - Gate thresholds in `validation_gates.yaml` are owner-editable defaults.
   They are not hard-coded in agent logic. A failed gate records a
   machine-readable reason code.
+- Phase 3 adds autonomous categories for read-only research and review-queue
+  updates, and approval-required categories for Fiverr orders, Fiverr contact,
+  Shopify production changes, and supplier contact. Those approval-required
+  categories are still blocked from execution in this phase. Existing
+  PROHIBITED rules are unchanged.
 - Never put real secrets in configuration. Secrets belong in `.env` (git-ignored)
   or a secret manager. See `.env.example`.

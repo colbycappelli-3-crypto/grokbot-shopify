@@ -1,5 +1,8 @@
 # GROKBOT COMMERCE — Phase 2 offline orchestration
 
+Phase 3 adds review and read-only research beside this layer. The workflows
+below are unchanged. See [`PHASE3_REVIEW_RESEARCH.md`](PHASE3_REVIEW_RESEARCH.md).
+
 Phase 2 runs commerce-intelligence workflows **offline**. Agents read TEST/MOCK
 fixtures or upstream structured outputs. They do not fetch URLs, contact
 suppliers, or call Shopify, Fiverr, or a payment provider.
