@@ -1,0 +1,27 @@
+id: supplier_research_agent
+name: Supplier Research Agent
+version: 0.1.0
+role: Supplier Research Agent
+division: us_dropshipping
+status: planned
+description: >-
+  Researches suppliers, prioritizing reliable vendors with inventory and
+  fulfillment located in the United States when possible. Records supplier
+  attributes with sources; unverified supplier claims remain UNKNOWN. Does not
+  commit to or contract with any supplier.
+default_permission: AUTONOMOUS
+capabilities:
+  - supplier_discovery
+  - fulfillment_location_analysis
+  - reliability_screening
+inputs:
+  - { name: product_profile, type: object, required: true }
+outputs:
+  - { name: candidate_suppliers, type: array, description: "Suppliers with attributes and sources." }
+  - { name: us_fulfillment_available, type: boolean, description: "Whether a US-based fulfillment option was found; UNKNOWN if unverified." }
+consumes_from: [product_validation_agent]
+evidence_requirements:
+  - "Supplier location and reliability claims must be sourced or marked UNKNOWN."
+escalation_triggers:
+  - "No reliable supplier identified for a validated opportunity."
+tags: [supplier, us_dropshipping]

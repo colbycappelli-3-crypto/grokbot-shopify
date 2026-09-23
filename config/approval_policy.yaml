@@ -1,0 +1,68 @@
+# GROKBOT COMMERCE — Approval Policy
+#
+# Owner-editable mapping of action categories to approval classes.
+# The human owner may change any mapping EXCEPT that PROHIBITED categories
+# cannot be relaxed at runtime (enforced in code).
+#
+# default_class is the fail-safe applied to any category not listed here.
+version: "1.0.0"
+default_class: APPROVAL_REQUIRED
+owner_can_override: true
+
+classes:
+  AUTONOMOUS:
+    description: >-
+      Low-risk, reversible activities such as research, analysis, drafting,
+      calculations, organizing information, generating concepts, and preparing
+      proposed changes. No external side effects.
+    examples: [market_research, unit_economics_analysis, copywriting_draft]
+  APPROVAL_REQUIRED:
+    description: >-
+      Material external actions requiring explicit human owner approval before
+      execution (publication, financial commitments, purchases, supplier
+      commitments, launching a store, changing production systems, meaningful
+      refunds, consequential customer communications).
+    examples: [launch_store, financial_commitment, send_customer_message]
+  PROHIBITED:
+    description: >-
+      Actions that must never be performed by any agent under any circumstances.
+    examples: [expose_credentials, deceptive_reviews_or_engagement, ip_infringement]
+
+rules:
+  # ---- AUTONOMOUS: research, analysis, drafting, preparation ----
+  - { category: market_research, class: AUTONOMOUS }
+  - { category: trend_discovery, class: AUTONOMOUS }
+  - { category: product_validation, class: AUTONOMOUS }
+  - { category: supplier_research, class: AUTONOMOUS }
+  - { category: unit_economics_analysis, class: AUTONOMOUS }
+  - { category: brand_strategy, class: AUTONOMOUS }
+  - { category: creative_concepting, class: AUTONOMOUS }
+  - { category: product_design_draft, class: AUTONOMOUS }
+  - { category: copywriting_draft, class: AUTONOMOUS }
+  - { category: seo_analysis, class: AUTONOMOUS }
+  - { category: merchandising_plan_draft, class: AUTONOMOUS }
+  - { category: quality_assurance_review, class: AUTONOMOUS }
+  - { category: ip_screening, class: AUTONOMOUS }
+  - { category: analytics_reporting, class: AUTONOMOUS }
+  - { category: prepare_customer_message_draft, class: AUTONOMOUS }
+
+  # ---- APPROVAL_REQUIRED: material external actions ----
+  - { category: publish_external_content, class: APPROVAL_REQUIRED }
+  - { category: launch_store, class: APPROVAL_REQUIRED }
+  - { category: change_production_system, class: APPROVAL_REQUIRED }
+  - { category: financial_commitment, class: APPROVAL_REQUIRED }
+  - { category: purchase, class: APPROVAL_REQUIRED }
+  - { category: supplier_commitment, class: APPROVAL_REQUIRED }
+  - { category: send_customer_message, class: APPROVAL_REQUIRED }
+  - { category: customer_refund, class: APPROVAL_REQUIRED }
+  - { category: connect_external_account, class: APPROVAL_REQUIRED }
+
+  # ---- PROHIBITED: never permitted ----
+  - { category: expose_credentials, class: PROHIBITED }
+  - { category: bypass_platform_safeguards, class: PROHIBITED }
+  - { category: deceptive_reviews_or_engagement, class: PROHIBITED }
+  - { category: impersonation, class: PROHIBITED }
+  - { category: ip_infringement, class: PROHIBITED }
+  - { category: fabricate_orders_or_activity, class: PROHIBITED }
+  - { category: unauthorized_financial_transaction, class: PROHIBITED }
+  - { category: circumvent_platform_rules, class: PROHIBITED }

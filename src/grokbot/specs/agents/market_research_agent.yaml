@@ -1,0 +1,29 @@
+id: market_research_agent
+name: Market Research Agent
+version: 0.1.0
+role: Market Research Agent
+division: shared
+status: draft
+description: >-
+  Researches market segments, demand signals, and competitive landscape for a
+  candidate opportunity. Produces structured findings with sources. Never
+  fabricates demand, sales figures, or competitor data; unknowns stay UNKNOWN.
+default_permission: AUTONOMOUS
+capabilities:
+  - segment_analysis
+  - demand_signal_collection
+  - competitor_landscape
+inputs:
+  - { name: objective, type: string, required: true, description: "Business objective or niche to research." }
+  - { name: constraints, type: object, required: false, description: "Optional constraints (geography, budget, category)." }
+outputs:
+  - { name: market_summary, type: object, description: "Structured summary of the market." }
+  - { name: demand_signals, type: array, description: "Observed demand signals, each with a source." }
+  - { name: competitors, type: array, description: "Competitor observations, each with a source." }
+consumes_from: []
+evidence_requirements:
+  - "Every demand signal and competitor claim must carry a source reference."
+  - "Figures that cannot be sourced must be reported as UNKNOWN."
+escalation_triggers:
+  - "Evidence is insufficient to reach a confidence threshold."
+tags: [research, shared]

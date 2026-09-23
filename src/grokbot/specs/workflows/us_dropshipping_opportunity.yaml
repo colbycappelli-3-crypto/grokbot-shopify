@@ -1,0 +1,80 @@
+id: us_dropshipping_opportunity
+name: US Dropshipping Opportunity Evaluation
+version: 0.1.0
+division: us_dropshipping
+description: >-
+  Evaluate a candidate dropshipping product for demonstrated demand, a reliable
+  (ideally US-based) supplier, and clear IP standing before any store is built.
+  Bad opportunities are stopped at validation gates; building/launching requires
+  human owner approval.
+objective: qualify_product_opportunity
+stages:
+  - id: market_scan
+    name: Market & demand scan
+    type: action
+    agent: market_research_agent
+    permission: AUTONOMOUS
+    depends_on: []
+    produces: [market_summary, demand_signals]
+
+  - id: demand_validation
+    name: Validate demand evidence
+    type: action
+    agent: product_validation_agent
+    permission: AUTONOMOUS
+    depends_on: [market_scan]
+    produces: [validation_verdict, evidence_gaps]
+
+  - id: demand_gate
+    name: Demand evidence gate
+    type: validation_gate
+    depends_on: [demand_validation]
+    validation:
+      criteria:
+        - "Demand is supported by at least one sourced signal."
+        - "Validation verdict is 'pass' (not insufficient_evidence)."
+      on_fail: request_more_research
+
+  - id: supplier_scan
+    name: Supplier research (prefer US fulfillment)
+    type: action
+    agent: supplier_research_agent
+    permission: AUTONOMOUS
+    depends_on: [demand_gate]
+    produces: [candidate_suppliers, us_fulfillment_available]
+
+  - id: ip_screen
+    name: IP & compliance screening
+    type: action
+    agent: compliance_ip_screening_agent
+    permission: AUTONOMOUS
+    depends_on: [demand_gate]
+    produces: [risk_findings, recommendation]
+
+  - id: viability_gate
+    name: Opportunity viability gate
+    type: validation_gate
+    depends_on: [supplier_scan, ip_screen]
+    validation:
+      criteria:
+        - "A reliable supplier is identified, or its absence is documented as UNKNOWN."
+        - "No unresolved IP/compliance risk (recommendation is 'clear')."
+      on_fail: halt
+
+  - id: launch_approval
+    name: Owner approval to build store
+    type: approval_gate
+    depends_on: [viability_gate]
+    approval:
+      approver: human_owner
+      description: >-
+        Approve committing resources to build a Shopify store for this
+        qualified opportunity.
+
+  - id: store_build
+    name: Assemble Shopify store (draft, not launched)
+    type: action
+    agent: shopify_store_builder_agent
+    permission: APPROVAL_REQUIRED
+    depends_on: [launch_approval]
+    produces: [store_config, launch_checklist]

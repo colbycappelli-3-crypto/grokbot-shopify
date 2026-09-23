@@ -1,0 +1,51 @@
+id: pod_product_concept
+name: Print-on-Demand Product Concept
+version: 0.1.0
+division: print_on_demand
+description: >-
+  Develop a print-on-demand product concept (e.g. shirts, hats), screen it for
+  IP risk, and prepare it for owner review before any store is built. No
+  fulfillment provider is contacted in this phase.
+objective: develop_pod_concept
+stages:
+  - id: niche_research
+    name: Niche & audience research
+    type: action
+    agent: market_research_agent
+    permission: AUTONOMOUS
+    depends_on: []
+    produces: [market_summary, demand_signals]
+
+  - id: ip_screen
+    name: IP & compliance screening of concept
+    type: action
+    agent: compliance_ip_screening_agent
+    permission: AUTONOMOUS
+    depends_on: [niche_research]
+    produces: [risk_findings, recommendation]
+
+  - id: concept_gate
+    name: Concept quality gate
+    type: validation_gate
+    depends_on: [ip_screen]
+    validation:
+      criteria:
+        - "Concept targets a sourced, non-empty audience signal."
+        - "IP screening recommendation is 'clear'."
+      on_fail: reject
+
+  - id: store_setup_approval
+    name: Owner approval to build POD store
+    type: approval_gate
+    depends_on: [concept_gate]
+    approval:
+      approver: human_owner
+      description: "Approve building a print-on-demand store for this concept."
+
+  - id: store_build
+    name: Assemble POD store (draft, not launched)
+    type: action
+    agent: shopify_store_builder_agent
+    permission: APPROVAL_REQUIRED
+    depends_on: [store_setup_approval]
+    produces: [store_config, launch_checklist]

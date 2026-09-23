@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokbot.commerce/schemas/agent_spec.schema.json",
+  "title": "GROKBOT Agent Specification",
+  "description": "Declarative specification for a logical GROKBOT agent role. Agents are specifications first; runtime implementations are attached later. The presence of a spec does NOT imply an autonomous running process.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "version",
+    "role",
+    "division",
+    "status",
+    "description",
+    "default_permission",
+    "inputs",
+    "outputs"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*$",
+      "description": "Stable unique identifier for the agent."
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Semantic version of the specification."
+    },
+    "role": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable logical role, e.g. 'Market Research Agent'."
+    },
+    "division": {
+      "type": "string",
+      "enum": ["shared", "print_on_demand", "us_dropshipping", "digital_services"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["planned", "draft", "active", "deprecated"],
+      "description": "Lifecycle status. 'planned' and 'draft' agents have no runtime behavior yet."
+    },
+    "description": { "type": "string", "minLength": 1 },
+    "default_permission": {
+      "type": "string",
+      "enum": ["AUTONOMOUS", "APPROVAL_REQUIRED", "PROHIBITED"],
+      "description": "Default approval class for this agent's primary actions. The human owner may override via policy."
+    },
+    "capabilities": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "inputs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/io_field" },
+      "description": "Structured inputs this agent consumes."
+    },
+    "outputs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/io_field" },
+      "description": "Structured outputs this agent produces for other agents to consume."
+    },
+    "consumes_from": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "Agent ids whose outputs this agent may consume."
+    },
+    "evidence_requirements": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "What must be sourced/verifiable in this agent's outputs. Unknown facts must remain UNKNOWN."
+    },
+    "escalation_triggers": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "Conditions under which this agent must escalate to the human owner."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  },
+  "$defs": {
+    "io_field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "type": {
+          "type": "string",
+          "enum": ["string", "number", "integer", "boolean", "object", "array", "reference"]
+        },
+        "required": { "type": "boolean", "default": false },
+        "description": { "type": "string" }
+      }
+    }
+  }
+}
