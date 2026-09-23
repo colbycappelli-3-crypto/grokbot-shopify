@@ -30,8 +30,10 @@ introduced, including:
 
 Do **not** connect to a production Shopify store, Fiverr account, payment
 provider, advertising account, supplier account, or any other external
-production service during this initial architecture phase. The orchestrator is
-planning-only and performs no external actions.
+production service. Phase 2 simulations are offline. Consequential categories
+(store launch, purchase, supplier commitment, publication, advertising,
+customer messages) stay blocked even if a simulated approval is recorded.
+Prohibited categories still cannot be relaxed.
 
 ## Prohibited actions (never permitted)
 

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokbot.commerce/schemas/audit_event.schema.json",
+  "title": "GROKBOT Audit Event",
+  "description": "One orchestration audit event. Details must not contain secrets.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event_id", "timestamp", "event_type", "details"],
+  "properties": {
+    "event_id": { "type": "string", "minLength": 1 },
+    "timestamp": { "type": "string", "minLength": 1 },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "project_created",
+        "job_created",
+        "job_assigned",
+        "job_completed",
+        "job_failed",
+        "evidence_added",
+        "validation_gate_evaluated",
+        "workflow_stopped",
+        "approval_requested",
+        "approval_decision",
+        "action_blocked",
+        "retry_scheduled",
+        "decision_recorded"
+      ]
+    },
+    "details": { "type": "object" }
+  }
+}

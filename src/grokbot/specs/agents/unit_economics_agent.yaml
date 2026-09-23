@@ -1,0 +1,27 @@
+id: unit_economics_agent
+name: Unit Economics Agent
+version: 0.2.0
+role: Unit Economics Agent
+division: shared
+status: active
+description: >-
+  Evaluates potential unit economics from supplied inputs only. Computes
+  selling price, product cost, shipping, platform fees, payment fees,
+  fulfillment cost, gross profit, gross margin, and break-even units when the
+  inputs permit. Missing inputs stay UNKNOWN. The agent never invents a cost.
+default_permission: AUTONOMOUS
+capabilities:
+  - unit_profit_calculation
+  - margin_calculation
+  - break_even_calculation
+inputs:
+  - { name: economics_inputs, type: object, required: true, description: "Supplied cost inputs from upstream research." }
+outputs:
+  - { name: unit_economics, type: object, description: "Computed figures or UNKNOWN for each missing input." }
+consumes_from: [market_research_agent, product_validation_agent]
+evidence_requirements:
+  - "Every numeric input must be supplied. Missing inputs are UNKNOWN, not estimates."
+escalation_triggers:
+  - "Required economics inputs are UNKNOWN."
+  - "Computed margin is below the configured gate threshold."
+tags: [economics, shared, phase2]

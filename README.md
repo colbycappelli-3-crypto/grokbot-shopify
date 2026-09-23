@@ -9,11 +9,13 @@ agents across three business divisions:
 2. **US Dropshipping Commerce**
 3. **Digital Services / Fiverr Operations**
 
-> **Phase status: FOUNDATION & CONTROL SYSTEM.** This repository currently
-> contains the architecture, specifications, approval/permission system, project
-> state model, and a planning-only orchestrator. It does **not** connect to
-> Shopify or any external service, make purchases, deploy, or use real
-> credentials. Do not proceed to the next phase without human approval.
+> **Phase status: OFFLINE ORCHESTRATION (Phase 2).** Phase 1's specs, approval
+> policy, and project state remain in place. Phase 2 adds an offline runner that
+> delegates jobs to logical commerce-intelligence agents, keeps evidence and
+> UNKNOWN values visible, evaluates configurable gates, and stops at human
+> review. It does **not** connect to Shopify, Fiverr, suppliers, or payment
+> systems, make purchases, publish, or use real credentials. Do not start
+> Phase 3 without human approval.
 
 ## Why this design
 
@@ -28,20 +30,27 @@ share one platform while keeping specialized workflows.
 config/                     Owner-editable configuration (approval policy)
 docs/                       Master operating document, architecture, approval, security, standards
 src/grokbot/
-  orchestrator/             Planning-only master orchestrator
-  agents/                   Agent registry (loads + validates agent specs)
+  orchestrator/             Master orchestrator: planning plus offline execution
+  agents/                   Agent registry and offline logical-agent runtimes
   workflows/                Workflow loader (DAG validation, execution order, gates)
   policy/                   Approval / permission system
+  gates/                    Configurable validation-gate defaults
+  protocol/                 Job / handoff records and epistemic status
+  evidence/                 Evidence ledger (TEST/MOCK in this phase)
+  audit/                    Structured audit log
+  dossier/                  Opportunity dossier builder
+  fixtures/                 TEST/MOCK opportunity packets
   state/                    Project/store state (auditable)
   schemas/                  Shared JSON schemas (contracts)
-  specs/agents/             Example agent specifications (data)
-  specs/workflows/          Example workflow specifications (data)
-  cli.py                    `grokbot validate` / `grokbot plan`
+  specs/agents/             Agent specifications (data)
+  specs/workflows/          Workflow specifications (data)
+  cli.py                    `grokbot validate` / `grokbot plan` / `grokbot simulate`
 tests/                      Schema, registry, workflow, policy, state, orchestrator, security tests
 .env.example                Placeholders only — never commit real secrets
 ```
 
 Start with [`docs/MASTER_OPERATING_DOCUMENT.md`](docs/MASTER_OPERATING_DOCUMENT.md).
+Phase 2 execution is described in [`docs/PHASE2_ORCHESTRATION.md`](docs/PHASE2_ORCHESTRATION.md).
 
 ## Quickstart
 
@@ -57,9 +66,13 @@ grokbot validate
 
 # 3. Produce a dependency-ordered, gated plan for a workflow
 grokbot plan us_dropshipping_opportunity --objective "Find a US-fulfilled winning product"
-grokbot plan pod_product_concept        --objective "Launch a niche t-shirt brand"
+grokbot plan pod_opportunity_discovery  --objective "Evaluate a niche t-shirt concept"
 
-# 4. Run the test suite
+# 4. Run an offline simulation against a TEST/MOCK fixture (no external actions)
+grokbot simulate pod_opportunity_discovery --fixture promising_pod
+grokbot simulate us_dropshipping_opportunity_discovery --fixture promising_dropship
+
+# 5. Run the test suite
 python -m pytest
 ```
 
@@ -76,6 +89,8 @@ python -m pytest
 | Workflow spec | A DAG of stages with dependencies, validation gates, and approval gates. | `workflow_spec.schema.json` |
 | Project state | Auditable per-project record: stages, evidence, decisions, approvals, escalations. | `project_state.schema.json` |
 | Approval policy | Owner-editable mapping of action categories to AUTONOMOUS / APPROVAL_REQUIRED / PROHIBITED. | `approval_policy.schema.json` |
+| Validation gates | Owner-editable default thresholds for offline screening. | `validation_gates.schema.json` |
+| Opportunity fixture | TEST/MOCK packet used by offline simulations. | `opportunity_fixture.schema.json` |
 
 ## Principles
 

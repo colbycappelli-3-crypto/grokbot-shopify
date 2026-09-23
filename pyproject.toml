@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "grokbot-commerce"
-version = "0.1.0"
-description = "GROKBOT COMMERCE — master orchestrator foundation for an autonomous multi-agent commerce platform."
+version = "0.2.0"
+description = "GROKBOT COMMERCE — offline multi-agent orchestrator and commerce-intelligence layer."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Proprietary" }
@@ -25,7 +25,12 @@ grokbot = "grokbot.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-grokbot = ["schemas/*.json", "specs/agents/*.yaml", "specs/workflows/*.yaml"]
+grokbot = [
+  "schemas/*.json",
+  "specs/agents/*.yaml",
+  "specs/workflows/*.yaml",
+  "fixtures/*.yaml",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

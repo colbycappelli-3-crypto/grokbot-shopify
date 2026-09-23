@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokbot.commerce/schemas/opportunity_dossier.schema.json",
+  "title": "GROKBOT Opportunity Dossier",
+  "description": "Aggregated offline dossier. Negative evidence and UNKNOWN fields stay visible.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "dossier_id",
+    "project_id",
+    "workflow_id",
+    "data_classification",
+    "banner",
+    "generated_at",
+    "sections"
+  ],
+  "properties": {
+    "dossier_id": { "type": "string", "minLength": 1 },
+    "project_id": { "type": "string", "minLength": 1 },
+    "workflow_id": { "type": "string", "minLength": 1 },
+    "data_classification": { "type": "string", "enum": ["TEST_MOCK", "UNSOURCED"] },
+    "banner": { "type": "string", "minLength": 1 },
+    "generated_at": { "type": "string" },
+    "sections": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "opportunity_identity",
+        "business_model",
+        "product_niche_hypothesis",
+        "demand_evidence",
+        "customer_hypothesis",
+        "competitive_context",
+        "pricing_context",
+        "unit_economics",
+        "supplier_fulfillment_status",
+        "compliance_ip_screening",
+        "assumptions",
+        "unknowns",
+        "failed_validation_criteria",
+        "risks",
+        "evidence_index",
+        "agent_decisions",
+        "overall_workflow_status",
+        "next_recommended_stage"
+      ],
+      "properties": {
+        "opportunity_identity": { "$ref": "#/$defs/section" },
+        "business_model": { "$ref": "#/$defs/section" },
+        "product_niche_hypothesis": { "$ref": "#/$defs/section" },
+        "demand_evidence": { "$ref": "#/$defs/section" },
+        "customer_hypothesis": { "$ref": "#/$defs/section" },
+        "competitive_context": { "$ref": "#/$defs/section" },
+        "pricing_context": { "$ref": "#/$defs/section" },
+        "unit_economics": { "$ref": "#/$defs/section" },
+        "supplier_fulfillment_status": { "$ref": "#/$defs/section" },
+        "compliance_ip_screening": { "$ref": "#/$defs/section" },
+        "assumptions": { "$ref": "#/$defs/section" },
+        "unknowns": { "$ref": "#/$defs/section" },
+        "failed_validation_criteria": { "$ref": "#/$defs/section" },
+        "risks": { "$ref": "#/$defs/section" },
+        "evidence_index": { "$ref": "#/$defs/section" },
+        "agent_decisions": { "$ref": "#/$defs/section" },
+        "overall_workflow_status": { "$ref": "#/$defs/section" },
+        "next_recommended_stage": { "$ref": "#/$defs/section" }
+      }
+    }
+  },
+  "$defs": {
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "content", "epistemic_status", "negative_items"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "content": {},
+        "epistemic_status": {
+          "type": "string",
+          "enum": ["FACT", "INFERENCE", "ASSUMPTION", "UNKNOWN", "MIXED", "NOT_APPLICABLE"]
+        },
+        "negative_items": { "type": "array" }
+      }
+    }
+  }
+}

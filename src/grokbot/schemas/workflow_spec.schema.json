@@ -71,6 +71,12 @@
             "on_fail": {
               "type": "string",
               "enum": ["halt", "request_more_research", "escalate", "reject"]
+            },
+            "gate_ids": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "minItems": 1,
+              "description": "Configurable validation gate ids evaluated with the criteria. Thresholds live in config, not in the workflow."
             }
           }
         },

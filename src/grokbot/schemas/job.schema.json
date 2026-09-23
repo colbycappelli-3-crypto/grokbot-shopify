@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokbot.commerce/schemas/job.schema.json",
+  "title": "GROKBOT Job",
+  "description": "A structured unit of work delegated to one registered agent role.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "job_id",
+    "project_id",
+    "workflow_id",
+    "agent_id",
+    "objective",
+    "required_inputs",
+    "supplied_inputs",
+    "dependencies",
+    "status",
+    "permission_class",
+    "created_at",
+    "evidence_requirements",
+    "expected_output_schema",
+    "retry_policy",
+    "stage_id",
+    "attempts"
+  ],
+  "properties": {
+    "job_id": { "type": "string", "minLength": 1 },
+    "project_id": { "type": "string", "minLength": 1 },
+    "workflow_id": { "type": "string", "minLength": 1 },
+    "agent_id": { "type": "string", "minLength": 1 },
+    "objective": { "type": "string", "minLength": 1 },
+    "required_inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "type"],
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string" }
+        }
+      }
+    },
+    "supplied_inputs": { "type": "object" },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "assigned", "in_progress", "completed", "failed", "blocked", "retrying"]
+    },
+    "permission_class": {
+      "type": "string",
+      "enum": ["AUTONOMOUS", "APPROVAL_REQUIRED", "PROHIBITED"]
+    },
+    "created_at": { "type": "string", "minLength": 1 },
+    "evidence_requirements": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "expected_output_schema": { "type": "object" },
+    "retry_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_attempts", "retryable_error_codes", "terminal_error_codes"],
+      "properties": {
+        "max_attempts": { "type": "integer", "minimum": 1 },
+        "retryable_error_codes": { "type": "array", "items": { "type": "string" } },
+        "terminal_error_codes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "stage_id": { "type": "string", "minLength": 1 },
+    "attempts": { "type": "integer", "minimum": 0 }
+  }
+}

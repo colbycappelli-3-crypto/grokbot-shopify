@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokbot.commerce/schemas/validation_gates.schema.json",
+  "title": "GROKBOT Validation Gates",
+  "description": "Owner-editable default thresholds for offline validation gates.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "label", "notice", "gates"],
+  "properties": {
+    "version": { "type": "string", "minLength": 1 },
+    "label": { "type": "string", "const": "configurable_defaults" },
+    "notice": { "type": "string", "minLength": 1 },
+    "gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimum_evidence_completeness",
+        "excessive_unknown_critical_fields",
+        "economics_completeness",
+        "margin_threshold",
+        "unresolved_ip_risk",
+        "unresolved_prohibited_product_risk",
+        "supplier_evidence_requirement",
+        "product_validation_outcome"
+      ],
+      "properties": {
+        "minimum_evidence_completeness": { "$ref": "#/$defs/min_evidence" },
+        "excessive_unknown_critical_fields": { "$ref": "#/$defs/unknowns" },
+        "economics_completeness": { "$ref": "#/$defs/economics" },
+        "margin_threshold": { "$ref": "#/$defs/margin" },
+        "unresolved_ip_risk": { "$ref": "#/$defs/risk_gate" },
+        "unresolved_prohibited_product_risk": { "$ref": "#/$defs/single_risk" },
+        "supplier_evidence_requirement": { "$ref": "#/$defs/supplier" },
+        "product_validation_outcome": { "$ref": "#/$defs/outcome" }
+      }
+    }
+  },
+  "$defs": {
+    "described": {
+      "type": "object",
+      "required": ["description"]
+    },
+    "min_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "min_verified_demand_signals"],
+      "properties": {
+        "description": { "type": "string" },
+        "min_verified_demand_signals": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "unknowns": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "critical_fields", "max_unknown"],
+      "properties": {
+        "description": { "type": "string" },
+        "critical_fields": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "max_unknown": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "economics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "required_inputs"],
+      "properties": {
+        "description": { "type": "string" },
+        "required_inputs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      }
+    },
+    "margin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "min_gross_margin", "applies_only_when_computable"],
+      "properties": {
+        "description": { "type": "string" },
+        "min_gross_margin": { "type": "number", "minimum": 0, "maximum": 1 },
+        "applies_only_when_computable": { "type": "boolean" }
+      }
+    },
+    "risk_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "fields", "blocking_statuses"],
+      "properties": {
+        "description": { "type": "string" },
+        "fields": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "blocking_statuses": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+      }
+    },
+    "single_risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "field", "blocking_statuses"],
+      "properties": {
+        "description": { "type": "string" },
+        "field": { "type": "string" },
+        "blocking_statuses": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+      }
+    },
+    "supplier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "applies_to_divisions", "required_status"],
+      "properties": {
+        "description": { "type": "string" },
+        "applies_to_divisions": { "type": "array", "items": { "type": "string" } },
+        "required_status": { "type": "string" }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "required_outcome"],
+      "properties": {
+        "description": { "type": "string" },
+        "required_outcome": { "type": "string", "enum": ["VALIDATE", "RESEARCH_FURTHER", "REJECT"] }
+      }
+    }
+  }
+}

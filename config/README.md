@@ -6,6 +6,7 @@ against JSON schemas in `src/grokbot/schemas/`.
 | File | Purpose | Schema |
 | --- | --- | --- |
 | `approval_policy.yaml` | Maps action categories to `AUTONOMOUS` / `APPROVAL_REQUIRED` / `PROHIBITED`. | `approval_policy.schema.json` |
+| `validation_gates.yaml` | Configurable default thresholds for offline validation gates. | `validation_gates.schema.json` |
 
 Notes:
 
@@ -13,5 +14,8 @@ Notes:
   relaxed at runtime (`ApprovalPolicy.set_override` refuses to weaken them).
 - `default_class` is the fail-safe applied to any category not listed. It is
   intentionally `APPROVAL_REQUIRED` so unknown actions are never auto-approved.
+- Gate thresholds in `validation_gates.yaml` are owner-editable defaults.
+  They are not hard-coded in agent logic. A failed gate records a
+  machine-readable reason code.
 - Never put real secrets in configuration. Secrets belong in `.env` (git-ignored)
   or a secret manager. See `.env.example`.

@@ -1,0 +1,30 @@
+id: opportunity_dossier_agent
+name: Opportunity Dossier Agent
+version: 0.2.0
+role: Opportunity Dossier Agent
+division: shared
+status: active
+description: >-
+  Aggregates upstream intelligence into an opportunity dossier for human
+  review. It does not hide negative evidence, clear failed gates, or perform
+  external actions.
+default_permission: AUTONOMOUS
+capabilities:
+  - dossier_aggregation
+inputs:
+  - { name: upstream, type: object, required: true, description: "Structured outputs from completed stages." }
+outputs:
+  - { name: dossier, type: object, description: "Opportunity dossier with unknowns and failed criteria visible." }
+consumes_from:
+  - trend_discovery_agent
+  - market_research_agent
+  - product_validation_agent
+  - unit_economics_agent
+  - compliance_ip_screening_agent
+  - supplier_research_agent
+evidence_requirements:
+  - "The dossier repeats upstream epistemic labels and evidence references."
+  - "Stages that did not run stay UNKNOWN or not assessed."
+escalation_triggers:
+  - "Critical unknowns or failed gates are present."
+tags: [dossier, shared, phase2]

@@ -1,0 +1,109 @@
+id: pod_opportunity_discovery
+name: POD Opportunity Discovery
+version: 0.2.0
+division: print_on_demand
+description: >-
+  Offline discovery workflow for a print-on-demand opportunity. Research,
+  validation, unit economics, and compliance screening produce a dossier and
+  stop at human review. No store, POD account, publication, or purchase is
+  performed.
+objective: discover_pod_opportunity
+stages:
+  - id: trend_discovery
+    name: Trend discovery
+    type: action
+    agent: trend_discovery_agent
+    permission: AUTONOMOUS
+    depends_on: []
+    produces: [candidate_opportunities, evidence_requirements, unknowns]
+
+  - id: market_research
+    name: Market research
+    type: action
+    agent: market_research_agent
+    permission: AUTONOMOUS
+    depends_on: [trend_discovery]
+    produces: [market_summary, demand_signals, customer_hypothesis, competitive_context, pricing_context]
+
+  - id: product_validation
+    name: Product validation
+    type: action
+    agent: product_validation_agent
+    permission: AUTONOMOUS
+    depends_on: [market_research]
+    produces: [validation_outcome, failed_criteria, evidence_gaps]
+
+  - id: product_validation_gate
+    name: Product validation gate
+    type: validation_gate
+    depends_on: [product_validation]
+    validation:
+      criteria:
+        - "Product validation outcome is VALIDATE under the configured rules."
+        - "Verified demand evidence meets the configured minimum."
+        - "Critical fields are not excessively UNKNOWN."
+      gate_ids:
+        - product_validation_outcome
+        - minimum_evidence_completeness
+        - excessive_unknown_critical_fields
+      on_fail: request_more_research
+
+  - id: unit_economics
+    name: Unit economics
+    type: action
+    agent: unit_economics_agent
+    permission: AUTONOMOUS
+    depends_on: [product_validation_gate]
+    produces: [unit_economics]
+
+  - id: economics_gate
+    name: Unit economics gate
+    type: validation_gate
+    depends_on: [unit_economics]
+    validation:
+      criteria:
+        - "Required economics inputs are present. Missing inputs stay UNKNOWN and fail completeness."
+        - "When gross margin is computable, it meets the configured default threshold."
+      gate_ids:
+        - economics_completeness
+        - margin_threshold
+      on_fail: halt
+
+  - id: compliance_screen
+    name: Compliance and IP screening
+    type: action
+    agent: compliance_ip_screening_agent
+    permission: AUTONOMOUS
+    depends_on: [economics_gate]
+    produces: [risk_findings, recommendation]
+
+  - id: compliance_gate
+    name: Compliance and IP gate
+    type: validation_gate
+    depends_on: [compliance_screen]
+    validation:
+      criteria:
+        - "Trademark and copyright status are clear. Unresolved IP blocks automatic approval."
+        - "Prohibited-product status is clear."
+      gate_ids:
+        - unresolved_ip_risk
+        - unresolved_prohibited_product_risk
+      on_fail: escalate
+
+  - id: compile_dossier
+    name: Compile opportunity dossier
+    type: action
+    agent: opportunity_dossier_agent
+    permission: AUTONOMOUS
+    depends_on: [compliance_gate]
+    produces: [dossier]
+
+  - id: human_review
+    name: Human review gate
+    type: approval_gate
+    depends_on: [compile_dossier]
+    approval:
+      approver: human_owner
+      description: >-
+        Review the offline POD opportunity dossier. Approval here does not
+        create a store, open a POD account, publish a product, or spend money.

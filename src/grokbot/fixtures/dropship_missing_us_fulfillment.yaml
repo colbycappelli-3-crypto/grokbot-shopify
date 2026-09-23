@@ -1,0 +1,99 @@
+fixture_id: dropship_missing_us_fulfillment
+data_classification: TEST_MOCK
+banner: "TEST/MOCK DATA — fabricated for offline simulation. Not real market, supplier, sales, customer, or pricing information."
+workflow_id: us_dropshipping_opportunity_discovery
+division: us_dropshipping
+objective: "Evaluate a TEST/MOCK dropshipping niche that lacks verified US fulfillment evidence."
+business_model: us_dropshipping
+niche_hypothesis: "TEST/MOCK niche: desk cable clip with no verified US fulfillment evidence."
+candidates:
+  - candidate_id: cand-cable-clip
+    theme: "Desk cable clip"
+    category: dropship_accessory
+    epistemic_status: INFERENCE
+    evidence_ids: []
+    statement: "TEST/MOCK candidate. Missing fulfillment evidence is not a verified US supplier."
+    unknowns:
+      - "US fulfillment is UNKNOWN."
+    recommended_research:
+      - "Do not invent a supplier or a US warehouse."
+market:
+  demand_present: true
+  demand_present_epistemic_status: FACT
+  demand_present_evidence_ids: [ev-clip-demand-1]
+  demand_signals:
+    - claim_id: demand-clip-1
+      field: demand
+      statement: "TEST/MOCK packet includes one verified mock demand signal for the cable clip."
+      epistemic_status: FACT
+      evidence_ids: [ev-clip-demand-1]
+  target_customer:
+    claim_id: customer-clip-1
+    field: target_customer
+    statement: "TEST/MOCK hypothesis: home-office buyers. Not a verified customer study."
+    epistemic_status: INFERENCE
+    evidence_ids: []
+  competition:
+    claim_id: competition-clip-1
+    field: competition
+    statement: "TEST/MOCK competitive context: other clip concepts exist in the packet."
+    epistemic_status: INFERENCE
+    evidence_ids: []
+  pricing_context:
+    claim_id: pricing-clip-1
+    field: pricing_context
+    statement: "TEST/MOCK scenario price is a supplied input, not an observed market price."
+    epistemic_status: FACT
+    evidence_ids: [ev-clip-price-1]
+  seasonality:
+    claim_id: seasonality-clip-1
+    field: seasonality
+    statement: "Seasonality was not supplied."
+    epistemic_status: UNKNOWN
+    evidence_ids: []
+  market_risks: []
+economics:
+  currency: USD
+  selling_price: 24.0
+  product_cost: 6.0
+  shipping: 4.0
+  platform_fees: 1.0
+  payment_fees: 0.9
+  fulfillment_cost: 2.0
+  fixed_costs: null
+compliance:
+  trademark_risk: clear
+  copyright_risk: clear
+  prohibited_product_risk: clear
+  deceptive_marketing_risk: clear
+  platform_policy_risk: clear
+  findings: []
+supplier:
+  applicable: true
+  us_fulfillment_evidence_status: unknown
+  statement: "TEST/MOCK: US fulfillment evidence was not supplied. No supplier was contacted."
+  epistemic_status: UNKNOWN
+  evidence_ids: []
+  candidate_suppliers: []
+  commitment_made: false
+assumptions:
+  - "TEST/MOCK assumption: absence of fulfillment evidence must stay UNKNOWN."
+evidence:
+  - evidence_id: ev-clip-demand-1
+    source_type: mock
+    source_reference: "MOCK:fixture/dropship_missing_us_fulfillment#demand"
+    retrieved_at: null
+    claim_supported: "TEST/MOCK demand signal for the cable-clip fixture."
+    collected_by: fixture_loader
+    verification_status: verified
+    freshness: static-test-fixture
+    notes: "TEST/MOCK DATA. Not a real market measurement."
+  - evidence_id: ev-clip-price-1
+    source_type: mock
+    source_reference: "MOCK:fixture/dropship_missing_us_fulfillment#price"
+    retrieved_at: null
+    claim_supported: "TEST/MOCK supplied scenario price for the cable-clip fixture."
+    collected_by: fixture_loader
+    verification_status: verified
+    freshness: static-test-fixture
+    notes: "TEST/MOCK DATA. Not an observed market price."
