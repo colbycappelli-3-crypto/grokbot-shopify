@@ -36,7 +36,9 @@ not place network calls, and refuse publish, purchase, order, message, refund,
 and supplier-contact operations. Consequential categories (store launch,
 purchase, supplier commitment, publication, advertising, customer messages,
 Fiverr orders, Fiverr contact, Shopify production changes) stay blocked even
-if a human approval is recorded. Prohibited categories still cannot be relaxed.
+if a human approval is recorded. Phase 4 can record that approval and advance
+the action only to a withheld-execution gate. Unclassified categories stay
+blocked by the policy default. Prohibited categories still cannot be relaxed.
 
 ## Prohibited actions (never permitted)
 

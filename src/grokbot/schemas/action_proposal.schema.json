@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokbot.commerce/schemas/action_proposal.schema.json",
+  "title": "GROKBOT Action Proposal",
+  "description": "A proposed consequential action awaiting an explicit human decision. Approval does not execute the action.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "proposal_id",
+    "project_id",
+    "workflow_id",
+    "division",
+    "category",
+    "summary",
+    "action_class",
+    "classified",
+    "consequential",
+    "status",
+    "gate_state",
+    "next_gated_state",
+    "advanced",
+    "executed_external_action",
+    "external_effects",
+    "block_reason",
+    "screening_block",
+    "decision",
+    "decision_record",
+    "data_classification",
+    "credentials_used",
+    "network_calls",
+    "production_connected",
+    "created_at"
+  ],
+  "properties": {
+    "proposal_id": { "type": "string", "pattern": "^apr-[a-z0-9]+$" },
+    "project_id": { "type": "string", "minLength": 1 },
+    "workflow_id": { "type": "string", "minLength": 1 },
+    "division": { "type": "string", "minLength": 1 },
+    "category": { "type": "string", "minLength": 1 },
+    "summary": { "type": "string", "minLength": 1 },
+    "action_class": {
+      "type": "string",
+      "enum": ["AUTONOMOUS", "APPROVAL_REQUIRED", "PROHIBITED"]
+    },
+    "classified": { "type": "boolean" },
+    "consequential": { "type": "boolean" },
+    "status": {
+      "type": "string",
+      "enum": ["proposed", "approved", "rejected", "blocked"]
+    },
+    "gate_state": {
+      "type": "string",
+      "enum": ["awaiting_decision", "approved_not_executed", "rejected", "blocked"]
+    },
+    "next_gated_state": { "type": ["string", "null"], "enum": ["execution_withheld", null] },
+    "advanced": { "type": "boolean" },
+    "executed_external_action": { "type": "boolean", "const": false },
+    "external_effects": { "type": "array", "maxItems": 0 },
+    "block_reason": { "type": ["string", "null"] },
+    "screening_block": { "type": ["string", "null"] },
+    "decision": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["decision", "note", "decided_by", "decided_at", "executed_external_action"],
+      "properties": {
+        "decision": { "type": "string", "enum": ["approved", "rejected", "blocked"] },
+        "note": { "type": "string" },
+        "decided_by": { "type": "string", "minLength": 1 },
+        "decided_at": { "type": "string", "minLength": 1 },
+        "executed_external_action": { "type": "boolean", "const": false }
+      }
+    },
+    "decision_record": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["timestamp", "event", "actor", "summary", "executed_external_action"],
+        "properties": {
+          "timestamp": { "type": "string", "minLength": 1 },
+          "event": {
+            "type": "string",
+            "enum": ["action_proposed", "action_decision", "gate_advanced", "execution_withheld"]
+          },
+          "actor": { "type": "string", "minLength": 1 },
+          "summary": { "type": "string", "minLength": 1 },
+          "executed_external_action": { "type": "boolean", "const": false }
+        }
+      }
+    },
+    "data_classification": { "type": "string", "enum": ["TEST_MOCK", "UNSOURCED"] },
+    "credentials_used": { "type": "boolean", "const": false },
+    "network_calls": { "type": "integer", "const": 0 },
+    "production_connected": { "type": "boolean", "const": false },
+    "created_at": { "type": "string", "minLength": 1 }
+  }
+}

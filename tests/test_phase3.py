@@ -26,7 +26,7 @@ def _research(packet_id, queue=None):
 
 
 def test_phase_keeps_external_connections_disabled():
-    assert PHASE == "phase_3_review_research"
+    assert PHASE == "phase_4_approval_workflow"
     assert EXTERNAL_CONNECTIONS_ENABLED is False
 
 

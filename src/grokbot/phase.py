@@ -1,15 +1,16 @@
-"""Phase 3 execution boundary.
+"""Phase 4 execution boundary.
 
-Human review and read-only commerce research may run offline. Consequential
-external actions stay blocked even if a human approval is recorded. This module
-is the explicit, inspectable list — it is not a hidden policy.
+A human owner can be shown a proposed consequential action and can approve or
+reject it. Approval advances that action only as far as a withheld-execution
+gate. This phase still does not publish, purchase, contact, message, order,
+refund, or spend.
 
 The historical block code ``phase_2_offline_no_consequential_actions`` is
 unchanged so earlier workflows keep the same fail-safe.
 """
 from __future__ import annotations
 
-PHASE = "phase_3_review_research"
+PHASE = "phase_4_approval_workflow"
 EXTERNAL_CONNECTIONS_ENABLED = False
 
 # Action categories that would change the outside world. This phase never

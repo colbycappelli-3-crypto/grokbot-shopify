@@ -9,14 +9,14 @@ agents across three business divisions:
 2. **US Dropshipping Commerce**
 3. **Digital Services / Fiverr Operations**
 
-> **Phase status: HUMAN REVIEW AND READ-ONLY RESEARCH (Phase 3).** Phase 1's
-> specs, approval policy, and project state remain in place. Phase 2's offline
-> runner, evidence rules, and discovery workflows remain in place. Phase 3 adds
-> a human review queue, a read-only HTML review page, and mock read-only
-> connectors for print-on-demand, US dropshipping, and Fiverr service research.
-> It does **not** connect credentials, purchase, publish, contact suppliers,
-> message Fiverr users, place orders, issue refunds, or modify Shopify
-> production data. Do not start Phase 4 without human approval.
+> **Phase status: HUMAN APPROVAL WORKFLOW (Phase 4).** Earlier phases remain
+> in place: specs, approval policy, offline research, and the read-only review
+> page. Phase 4 presents proposed consequential actions, records an explicit
+> approve or reject decision, and lets an approved action advance only to a
+> withheld-execution gate. It does **not** connect production credentials,
+> publish, purchase, contact suppliers, message users, place orders, issue
+> refunds, or make financial commitments. Do not start Phase 5 without human
+> approval.
 
 ## Why this design
 
@@ -56,6 +56,7 @@ tests/                      Schema, registry, workflow, policy, state, orchestra
 Start with [`docs/MASTER_OPERATING_DOCUMENT.md`](docs/MASTER_OPERATING_DOCUMENT.md).
 Phase 2 execution is described in [`docs/PHASE2_ORCHESTRATION.md`](docs/PHASE2_ORCHESTRATION.md).
 Phase 3 review and research is described in [`docs/PHASE3_REVIEW_RESEARCH.md`](docs/PHASE3_REVIEW_RESEARCH.md).
+Phase 4 approval is described in [`docs/PHASE4_APPROVAL.md`](docs/PHASE4_APPROVAL.md).
 
 ## Quickstart
 
@@ -84,7 +85,10 @@ grokbot research fiverr_service_research_review --packet fiverr_revision_ready
 grokbot review list
 grokbot review render --output /tmp/grokbot-review.html
 
-# 6. Run the test suite
+# 6. Demonstrate the approval workflow on TEST/MOCK research (nothing is executed)
+grokbot approve demo
+
+# 7. Run the test suite
 python -m pytest
 ```
 
