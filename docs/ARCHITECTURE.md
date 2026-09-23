@@ -49,6 +49,7 @@ this phase.
 | Audit log | `src/grokbot/audit/` | Structured events for projects, jobs, evidence, gates, stops, and approvals. |
 | Connectors | `src/grokbot/connectors/` | Read-only research interfaces. Shipped connectors are mocks. |
 | Human review | `src/grokbot/review/` | Local review queue and a GET-only HTML page. Decisions do not execute. |
+| Action approval | `src/grokbot/approval/` | Proposed consequential actions, explicit decisions, and a withheld-execution gate. |
 | CLI | `src/grokbot/cli.py` | `validate`, `plan`, `simulate`, `research`, and `review`. |
 | Specs (data) | `src/grokbot/specs/` | Agent, workflow, and connector specifications. |
 

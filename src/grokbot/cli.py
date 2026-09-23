@@ -15,6 +15,13 @@ import sys
 from typing import List, Optional
 
 from .agents.registry import AgentRegistry
+from .approval.workflow import (
+    ApprovalWorkflow,
+    ProposalStateError,
+    default_approval_dir,
+    demonstrate_approval_workflow,
+    present_proposal,
+)
 from .connectors.registry import ConnectorRegistry
 from .fixtures.loader import load_all_fixtures, load_all_research_packets, load_fixture, load_research_packet
 from .gates.loader import load_validation_gates
@@ -336,6 +343,90 @@ def cmd_review_decide(args: argparse.Namespace) -> int:
     return 0
 
 
+def _approvals(args: argparse.Namespace) -> ApprovalWorkflow:
+    return ApprovalWorkflow(args.store)
+
+
+def cmd_approve_list(args: argparse.Namespace) -> int:
+    try:
+        items = _approvals(args).list_items()
+    except ProposalStateError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    if not items:
+        print("No action proposals.")
+        return 0
+    for item in items:
+        print(f"{item['proposal_id']}  {item['gate_state']}  {item['category']}  {item['project_id']}")
+    return 0
+
+
+def cmd_approve_show(args: argparse.Namespace) -> int:
+    try:
+        print(present_proposal(_approvals(args).get(args.proposal_id)))
+    except ProposalStateError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    return 0
+
+
+def cmd_approve_propose(args: argparse.Namespace) -> int:
+    store = _approvals(args)
+    runner = build_runner()
+    item = store.propose(
+        policy=runner.policy,
+        project_id=args.project,
+        workflow_id=args.workflow,
+        division=args.division,
+        category=args.category,
+        summary=args.summary,
+        data_classification="TEST_MOCK",
+    )
+    print(present_proposal(item))
+    print("No external action was performed.")
+    return 0
+
+
+def cmd_approve_decide(args: argparse.Namespace) -> int:
+    try:
+        item = _approvals(args).decide(args.proposal_id, args.decision, note=args.note or "", decided_by=args.by)
+    except (ProposalStateError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    print(present_proposal(item))
+    print("No external action was performed.")
+    return 0
+
+
+def cmd_approve_release(args: argparse.Namespace) -> int:
+    try:
+        result = _approvals(args).release(args.proposal_id)
+    except ProposalStateError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    print(f"Proposal:  {result['proposal_id']}")
+    print(f"Category:  {result['category']}")
+    print(f"Gate:      {result['gate_state']}")
+    print(f"Next gate: {result['next_gated_state']}")
+    print(f"Executed:  {result['executed']}")
+    print(f"Code:      {result['code']}")
+    print(result["message"])
+    return 0
+
+
+def cmd_approve_demo(_args: argparse.Namespace) -> int:
+    from tempfile import TemporaryDirectory
+
+    with TemporaryDirectory() as directory:
+        report = demonstrate_approval_workflow(directory)
+    print(report["text"])
+    if not report["ok"]:
+        print("Approval demo failed its mock checks.", file=sys.stderr)
+        return 1
+    print("Mock approval demo passed. No production system was contacted.")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="grokbot",
@@ -400,6 +491,43 @@ def build_parser() -> argparse.ArgumentParser:
     review_decide.add_argument("--by", default="human_owner")
     review_decide.add_argument("--queue", default=default_review_dir())
     review_decide.set_defaults(func=cmd_review_decide)
+
+    approve = sub.add_parser("approve", help="Present and decide proposed consequential actions. Nothing is executed.")
+    approve_sub = approve.add_subparsers(dest="approve_command", required=True)
+
+    approve_list = approve_sub.add_parser("list", help="List action proposals.")
+    approve_list.add_argument("--store", default=default_approval_dir())
+    approve_list.set_defaults(func=cmd_approve_list)
+
+    approve_show = approve_sub.add_parser("show", help="Present one action proposal.")
+    approve_show.add_argument("proposal_id")
+    approve_show.add_argument("--store", default=default_approval_dir())
+    approve_show.set_defaults(func=cmd_approve_show)
+
+    approve_propose = approve_sub.add_parser("propose", help="Present a consequential action for decision.")
+    approve_propose.add_argument("category")
+    approve_propose.add_argument("--summary", required=True)
+    approve_propose.add_argument("--project", required=True)
+    approve_propose.add_argument("--workflow", required=True)
+    approve_propose.add_argument("--division", required=True)
+    approve_propose.add_argument("--store", default=default_approval_dir())
+    approve_propose.set_defaults(func=cmd_approve_propose)
+
+    approve_decide = approve_sub.add_parser("decide", help="Record an explicit approve or reject decision.")
+    approve_decide.add_argument("proposal_id")
+    approve_decide.add_argument("--decision", required=True, choices=["approved", "rejected"])
+    approve_decide.add_argument("--note", default="")
+    approve_decide.add_argument("--by", default="human_owner")
+    approve_decide.add_argument("--store", default=default_approval_dir())
+    approve_decide.set_defaults(func=cmd_approve_decide)
+
+    approve_release = approve_sub.add_parser("release", help="Advance an approved action only as far as execution withheld.")
+    approve_release.add_argument("proposal_id")
+    approve_release.add_argument("--store", default=default_approval_dir())
+    approve_release.set_defaults(func=cmd_approve_release)
+
+    approve_demo = approve_sub.add_parser("demo", help="Run the approval workflow on TEST/MOCK research.")
+    approve_demo.set_defaults(func=cmd_approve_demo)
 
     return parser
 

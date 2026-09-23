@@ -40,3 +40,6 @@ jobs:
           python -m grokbot research pod_research_review --packet pod_research_ready
           python -m grokbot research us_dropship_research_review --packet dropship_research_ready
           python -m grokbot research fiverr_service_research_review --packet fiverr_revision_ready
+
+      - name: Demonstrate the mock approval workflow
+        run: python -m grokbot approve demo

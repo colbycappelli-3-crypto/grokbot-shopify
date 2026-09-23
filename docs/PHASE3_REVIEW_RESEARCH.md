@@ -1,5 +1,8 @@
 # GROKBOT COMMERCE — Phase 3 human review and commerce research
 
+Phase 4 adds the approval workflow beside this layer. See
+[`PHASE4_APPROVAL.md`](PHASE4_APPROVAL.md).
+
 Phase 3 adds a human review surface and read-only research for three future
 operating divisions. It does not connect production credentials and it does not
 execute consequential actions.

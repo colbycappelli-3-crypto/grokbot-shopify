@@ -296,6 +296,104 @@ class WorkflowRunner:
             "phase": PHASE,
         }
 
+    def propose_consequential_action(self, run: OpportunityRun, store: Any, category: str, summary: str) -> dict:
+        """Present one consequential action to the human owner. Nothing is executed."""
+        classification = (run.fixture or {}).get("data_classification")
+        item = store.propose(
+            policy=self.policy,
+            project_id=run.project.project_id,
+            workflow_id=run.workflow.id,
+            division=run.workflow.division,
+            category=category,
+            summary=summary,
+            screening_block=self._approval_block_reason(run),
+            data_classification=classification if classification in {"TEST_MOCK", "UNSOURCED"} else "UNSOURCED",
+        )
+        run.audit.record(
+            "action_proposed",
+            project_id=run.project.project_id,
+            proposal_id=item["proposal_id"],
+            category=category,
+            gate_state=item["gate_state"],
+            block_reason=item["block_reason"],
+            executed_external_action=False,
+        )
+        self._decide(
+            run,
+            "grokbot",
+            f"Proposed {category} for an explicit human decision.",
+            rationale=summary,
+        )
+        return item
+
+    def decide_consequential_action(
+        self,
+        run: OpportunityRun,
+        store: Any,
+        proposal_id: str,
+        decision: str,
+        note: str = "",
+        decided_by: str = "human_owner",
+    ) -> dict:
+        """Record approve or reject. Only a clear approval advances to execution_withheld."""
+        screening = self._approval_block_reason(run) if decision == "approved" else None
+        item = store.decide(
+            proposal_id,
+            decision,
+            note=note,
+            decided_by=decided_by,
+            screening_block=screening,
+        )
+        run.audit.record(
+            "action_decision",
+            project_id=run.project.project_id,
+            proposal_id=proposal_id,
+            category=item["category"],
+            decision=item["decision"]["decision"],
+            gate_state=item["gate_state"],
+            advanced=item["advanced"],
+            executed_external_action=False,
+        )
+        if item["advanced"]:
+            run.audit.record(
+                "gate_advanced",
+                project_id=run.project.project_id,
+                proposal_id=proposal_id,
+                category=item["category"],
+                next_gated_state=item["next_gated_state"],
+                executed_external_action=False,
+            )
+        self._decide(
+            run,
+            decided_by,
+            f"Action proposal {proposal_id} decision: {item['decision']['decision']}.",
+            rationale="The decision record does not execute the action.",
+        )
+        return item
+
+    def release_consequential_action(self, run: OpportunityRun, store: Any, proposal_id: str) -> dict:
+        """Move an approved action to the execution gate and withhold the external effect."""
+        result = store.release(proposal_id)
+        run.audit.record(
+            "execution_withheld",
+            project_id=run.project.project_id,
+            proposal_id=proposal_id,
+            category=result["category"],
+            gate_state=result["gate_state"],
+            code=result["code"],
+            executed=False,
+        )
+        run.audit.record(
+            "action_blocked",
+            project_id=run.project.project_id,
+            category=result["category"],
+            executed=False,
+            reasons=[{"code": result["code"], "message": result["message"]}],
+        )
+        if result["executed"] or result["external_effects"]:
+            raise RuntimeError("Phase 4 invariant failed: a consequential action was executed.")
+        return result
+
     # ---- setup -----------------------------------------------------------------
     def _ingest_evidence(self, run: OpportunityRun) -> None:
         if not run.fixture:

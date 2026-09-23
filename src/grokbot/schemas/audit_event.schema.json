@@ -26,7 +26,11 @@
         "retry_scheduled",
         "decision_recorded",
         "review_enqueued",
-        "review_decision"
+        "review_decision",
+        "action_proposed",
+        "action_decision",
+        "gate_advanced",
+        "execution_withheld"
       ]
     },
     "details": { "type": "object" }

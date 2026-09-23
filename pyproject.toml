@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "grokbot-commerce"
-version = "0.3.0"
-description = "GROKBOT COMMERCE — human review and read-only commerce research layer."
+version = "0.4.0"
+description = "GROKBOT COMMERCE — human approval workflow for proposed consequential actions."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Proprietary" }

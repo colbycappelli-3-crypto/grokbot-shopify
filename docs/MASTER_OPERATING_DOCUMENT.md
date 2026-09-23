@@ -127,12 +127,16 @@ validation gates, dossiers, and two discovery workflows that stop at human
 review. Phase 3 is the **human review and commerce research** layer: a review
 queue, a read-only review page, and mock read-only connectors for
 print-on-demand drafts, US-dropshipping research, and Fiverr service drafts.
+Phase 4 is the **human approval workflow**: a proposed consequential action is
+presented to the owner, an explicit approve or reject decision is recorded, and
+only a classified approval advances the action to a withheld-execution gate.
 
 Do NOT connect production Shopify, Fiverr, supplier, or payment credentials.
 Do NOT purchase, publish, advertise, contact suppliers, message Fiverr users,
-place Fiverr orders, or issue refunds. Do NOT add real credentials. Do NOT
-start Phase 4 without explicit human approval. A recorded approval still does
-not execute a consequential action.
+place Fiverr orders, issue refunds, or make financial commitments. Do NOT add
+real credentials. Do NOT start Phase 5 without explicit human approval.
+Unclassified and prohibited actions stay blocked. A recorded approval still
+does not execute a consequential action.
 
 ## 9. Standards for adding an agent or workflow
 
