@@ -5,6 +5,9 @@ every other method and every non-loopback host before opening a request.
 Production Shopify is never contacted. A loopback probe may use a fake token
 that starts with ``TEST_MOCK_`` so tests can show the GET path. That probe is
 TEST/MOCK data and is not a catalog fact.
+
+Phase 6 can see whether the catalog credential is present in the process
+environment. It still has no sender for the real store.
 """
 from __future__ import annotations
 
@@ -17,7 +20,8 @@ from urllib.parse import urlparse
 
 import urllib.request
 
-from ..phase import EXTERNAL_CONNECTIONS_ENABLED
+from ..phase import EXTERNAL_CONNECTIONS_ENABLED, SHOPIFY_LIVE_REQUESTS_ENABLED
+from ..envconfig.shopify import inspect_catalog_secrets
 from .registry import ALLOWED_OPERATIONS, FORBIDDEN_OPERATIONS, _base, _refusal
 
 CONNECTOR_ID = "shopify_catalog_read"
@@ -317,6 +321,150 @@ def demonstrate_readonly_connector() -> dict:
         "blocked_host": blocked_host,
         "blocked_method": blocked_method,
         "launch": launch,
+        "audit": audit,
+        "blob": blob,
+    }
+
+
+def attempt_live_catalog_read(*, approval_granted: bool = False) -> dict:
+    """Decide whether a production catalog GET could run. It cannot in this phase.
+
+    There is no production sender. Forcing the enable flags on still does not
+    call urlopen. Loopback probes stay on ``perform_readonly_probe``.
+    """
+    secrets = inspect_catalog_secrets()
+    reasons = []
+    if not EXTERNAL_CONNECTIONS_ENABLED:
+        reasons.append("external_connections_disabled")
+    if not SHOPIFY_LIVE_REQUESTS_ENABLED:
+        reasons.append("live_requests_disabled")
+    if not approval_granted:
+        reasons.append("human_approval_required")
+    if secrets["domain_status"] != "present" or secrets["token_status"] != "present":
+        reasons.append("credential_required")
+    return {
+        "connector_id": CONNECTOR_ID,
+        "method": "GET",
+        "scope": SCOPE,
+        "path": API_PATH,
+        "host_placeholder": PLACEHOLDER_HOST,
+        "external_connections_enabled": EXTERNAL_CONNECTIONS_ENABLED,
+        "live_requests_enabled": SHOPIFY_LIVE_REQUESTS_ENABLED,
+        "approval_granted": approval_granted,
+        "secrets": secrets,
+        "reasons": reasons,
+        "live_request_permitted": False,
+        "production_sender_installed": False,
+        "network_calls": 0,
+        "credentials_used": False,
+        "production_connected": False,
+        "executed": False,
+        "urlopen_called": False,
+        "refusal_code": reasons[0] if reasons else "production_sender_not_installed",
+    }
+
+
+def demonstrate_connection_preparation(directory) -> dict:
+    """Show local secret status, a withheld approval, and no Shopify request."""
+    from ..approval.workflow import ApprovalWorkflow
+    from ..audit.log import AuditLog
+    from ..fixtures.loader import load_research_packet
+    from ..orchestrator.engine import build_runner
+
+    secrets = inspect_catalog_secrets()
+    withheld = attempt_live_catalog_read(approval_granted=True)
+    packet = load_research_packet("pod_research_ready")
+    runner = build_runner()
+    run = runner.open_opportunity(packet["objective"], workflow_id=packet["workflow_id"], fixture=packet)
+    runner.run(run)
+    store = ApprovalWorkflow(directory)
+    proposal = runner.propose_consequential_action(
+        run,
+        store,
+        "connect_external_account",
+        "TEST/MOCK proposal: connect the Shopify catalog read for GET read_products only. No store would be contacted.",
+    )
+    decided = runner.decide_consequential_action(
+        run,
+        store,
+        proposal["proposal_id"],
+        "approved",
+        note="advance the gate only",
+    )
+    released = runner.release_consequential_action(run, store, proposal["proposal_id"])
+    audit = AuditLog()
+    audit.record(
+        "connection_withheld",
+        connector_id=CONNECTOR_ID,
+        scope=SCOPE,
+        method="GET",
+        domain_status=secrets["domain_status"],
+        token_status=secrets["token_status"],
+        external_connections_enabled=False,
+        live_requests_enabled=False,
+        network_calls=0,
+        credentials_used=False,
+        production_connected=False,
+        refusal_code=withheld["refusal_code"],
+    )
+    run.audit.record(
+        "connection_withheld",
+        connector_id=CONNECTOR_ID,
+        scope=SCOPE,
+        domain_status=secrets["domain_status"],
+        token_status=secrets["token_status"],
+        network_calls=0,
+        production_connected=False,
+    )
+    ok = (
+        EXTERNAL_CONNECTIONS_ENABLED is False
+        and SHOPIFY_LIVE_REQUESTS_ENABLED is False
+        and withheld["live_request_permitted"] is False
+        and withheld["urlopen_called"] is False
+        and withheld["network_calls"] == 0
+        and withheld["credentials_used"] is False
+        and withheld["production_connected"] is False
+        and withheld["executed"] is False
+        and withheld["production_sender_installed"] is False
+        and secrets["values_included"] is False
+        and secrets["files_read"] == []
+        and secrets["scope"] == SCOPE
+        and secrets["api_key_used"] is False
+        and decided["gate_state"] == "approved_not_executed"
+        and decided["executed_external_action"] is False
+        and released["executed"] is False
+        and released["code"] == "phase_2_offline_no_consequential_actions"
+        and released["network_calls"] == 0
+        and run.external_actions_performed == []
+        and audit.of_type("connection_withheld")
+    )
+    lines = [
+        "Phase: phase_6_catalog_connection_prepared",
+        f"EXTERNAL_CONNECTIONS_ENABLED: {EXTERNAL_CONNECTIONS_ENABLED}",
+        f"SHOPIFY_LIVE_REQUESTS_ENABLED: {SHOPIFY_LIVE_REQUESTS_ENABLED}",
+        "Secret source: process environment only. No secret file was read.",
+        f"SHOPIFY_STORE_DOMAIN: {secrets['domain_status']}",
+        f"SHOPIFY_ADMIN_TOKEN: {secrets['token_status']}",
+        f"Token prefix recognized: {secrets['token_prefix_recognized']}",
+        f"Scope: {SCOPE}",
+        f"Planned request: GET https://{PLACEHOLDER_HOST}{API_PATH}",
+        f"Live request permitted: {withheld['live_request_permitted']}",
+        f"Production sender installed: {withheld['production_sender_installed']}",
+        f"Stop code: {withheld['refusal_code']}",
+        f"connect_external_account gate: {decided['gate_state']}",
+        f"Release executed={released['executed']} code={released['code']}",
+        "Human approval is required before either enable flag may be turned on.",
+        "Production Shopify was not contacted.",
+    ]
+    text = _scrub("\n".join(lines))
+    blob = _scrub(json.dumps({"secrets": secrets, "withheld": withheld, "released": released}))
+    return {
+        "ok": ok,
+        "text": text,
+        "secrets": secrets,
+        "withheld": withheld,
+        "decided": decided,
+        "released": released,
         "audit": audit,
         "blob": blob,
     }

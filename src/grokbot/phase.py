@@ -1,15 +1,19 @@
-"""Phase 5 execution boundary.
+"""Phase 6 execution boundary.
 
-A Shopify catalog connector can describe the read it would perform. It does
-not open that connection. Approval gates still stop every consequential action.
+The Shopify catalog credential can be configured in the process environment.
+Neither enable flag is on, and this phase has no sender for the real store.
+Approval gates still stop every consequential action.
 
 The historical block code ``phase_2_offline_no_consequential_actions`` is
 unchanged so earlier workflows keep the same fail-safe.
 """
 from __future__ import annotations
 
-PHASE = "phase_5_readonly_connector"
+PHASE = "phase_6_catalog_connection_prepared"
 EXTERNAL_CONNECTIONS_ENABLED = False
+# A later reviewed change may set this only after explicit human approval.
+# This phase does not install a production sender, so the flag alone cannot connect.
+SHOPIFY_LIVE_REQUESTS_ENABLED = False
 
 # Action categories that would change the outside world. This phase never
 # executes them. Approval-policy classes still apply; this set is an additional stop.

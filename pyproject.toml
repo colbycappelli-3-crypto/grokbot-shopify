@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "grokbot-commerce"
-version = "0.5.0"
-description = "GROKBOT COMMERCE — first read-only Shopify catalog connector, not connected."
+version = "0.6.0"
+description = "GROKBOT COMMERCE — Shopify catalog connection prepared, not enabled."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Proprietary" }

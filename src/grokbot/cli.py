@@ -7,7 +7,7 @@ Commands perform no external actions:
 * ``grokbot simulate <workflow> --fixture <id>`` — run an offline TEST/MOCK simulation.
 * ``grokbot research <workflow> --packet <id>`` — run read-only research and enqueue review.
 * ``grokbot review`` — list, show, render, or decide a human review. Decisions do not execute.
-* ``grokbot connector`` — show the disconnected Shopify catalog read. Nothing is connected.
+* ``grokbot connector`` — show the catalog credential status. Nothing is connected.
 """
 from __future__ import annotations
 
@@ -416,7 +416,10 @@ def cmd_approve_release(args: argparse.Namespace) -> int:
 
 
 def cmd_connector_status(_args: argparse.Namespace) -> int:
+    from .envconfig.shopify import inspect_catalog_secrets
+
     registry = ConnectorRegistry.load()
+    secrets = inspect_catalog_secrets()
     for spec in registry.specs.values():
         credential = spec.get("credential") or {}
         env_vars = ", ".join(credential.get("env_vars") or []) or "(none)"
@@ -425,7 +428,24 @@ def cmd_connector_status(_args: argparse.Namespace) -> int:
             f"credentials_required={spec['credentials_required']} "
             f"production_connected={spec['production_connected']} env={env_vars}"
         )
-    print("No production connection is open.")
+    print(f"SHOPIFY_STORE_DOMAIN: {secrets['domain_status']}")
+    print(f"SHOPIFY_ADMIN_TOKEN: {secrets['token_status']}")
+    print("Secret values are not printed. No production connection is open.")
+    return 0
+
+
+def cmd_connector_prepare(_args: argparse.Namespace) -> int:
+    from tempfile import TemporaryDirectory
+
+    from .connectors.shopify_read import demonstrate_connection_preparation
+
+    with TemporaryDirectory() as directory:
+        report = demonstrate_connection_preparation(directory)
+    print(report["text"])
+    if not report["ok"]:
+        print("Catalog connection preparation failed its checks.", file=sys.stderr)
+        return 1
+    print("Catalog connection remains disabled. Production Shopify was not contacted.")
     return 0
 
 
@@ -564,6 +584,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     connector_demo = connector_sub.add_parser("demo", help="Show the GET-only catalog probe and the blocked write path.")
     connector_demo.set_defaults(func=cmd_connector_demo)
+
+    connector_prepare = connector_sub.add_parser(
+        "prepare",
+        help="Show local catalog-secret status and withhold the live connection.",
+    )
+    connector_prepare.set_defaults(func=cmd_connector_prepare)
 
     return parser
 
