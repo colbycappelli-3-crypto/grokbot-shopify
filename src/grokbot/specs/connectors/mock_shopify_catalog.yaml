@@ -18,6 +18,11 @@ operations_forbidden:
   - create_listing
   - modify_shopify
   - connect
+  - create_product
+  - edit_product
+  - payment
+  - fulfillment
+  - advertising
 credentials_required: false
 production_connected: false
 description: >-

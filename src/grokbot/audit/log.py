@@ -10,6 +10,7 @@ import uuid
 from typing import Any, Dict, List
 
 from ..clock import utc_now
+from ..envconfig.shopify import configured_secret_values
 from ..validation import validate
 
 AUDIT_EVENT_TYPES = (
@@ -33,6 +34,7 @@ AUDIT_EVENT_TYPES = (
     "gate_advanced",
     "execution_withheld",
     "connector_queried",
+    "connection_withheld",
 )
 
 _SECRET_KEY = re.compile(
@@ -40,7 +42,8 @@ _SECRET_KEY = re.compile(
     re.IGNORECASE,
 )
 _SECRET_VALUE = re.compile(
-    r"(sk_live_|sk_test_|ghp_|xox[baprs]-|AKIA[0-9A-Z]{16}|-----BEGIN )"
+    r"(sk_live_|sk_test_|ghp_|xox[baprs]-|AKIA[0-9A-Z]{16}|-----BEGIN |"
+    r"shpat_[A-Za-z0-9]+|shpca_[A-Za-z0-9]+|shpss_[A-Za-z0-9]+|shppa_[A-Za-z0-9]+)"
 )
 
 
@@ -55,8 +58,14 @@ def redact(value: Any) -> Any:
         return cleaned
     if isinstance(value, list):
         return [redact(item) for item in value]
-    if isinstance(value, str) and _SECRET_VALUE.search(value):
-        return "[REDACTED]"
+    if isinstance(value, str):
+        cleaned = value
+        for secret in configured_secret_values():
+            if secret in cleaned:
+                cleaned = cleaned.replace(secret, "[REDACTED]")
+        if _SECRET_VALUE.search(cleaned):
+            return "[REDACTED]"
+        return cleaned
     return value
 
 

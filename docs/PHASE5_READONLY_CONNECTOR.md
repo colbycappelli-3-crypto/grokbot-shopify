@@ -26,6 +26,5 @@ live Shopify read. The connection itself is not open.
 
 Do not put the token or shop domain in the repository. `.env.example` keeps `REPLACE_ME`.
 
-## Phase 6 recommendation
-
-Do not start Phase 6 from this change. After an explicit approval, and only after `SHOPIFY_ADMIN_TOKEN` (scope `read_products`) and `SHOPIFY_STORE_DOMAIN` are supplied locally and kept out of git, a later phase may enable this one GET. Publishing, purchasing, supplier contact, messaging, orders, refunds, and payments stay blocked.
+Phase 6 prepares the local credential and still does not enable the connection.
+See [`PHASE6_CATALOG_CONNECTION.md`](PHASE6_CATALOG_CONNECTION.md).

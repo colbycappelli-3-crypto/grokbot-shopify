@@ -46,3 +46,6 @@ jobs:
 
       - name: Demonstrate the read-only Shopify catalog connector
         run: python -m grokbot connector demo
+
+      - name: Show the withheld Shopify catalog connection
+        run: python -m grokbot connector prepare

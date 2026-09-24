@@ -107,6 +107,7 @@ engine.
 
 No production Shopify, Fiverr, payment, advertising, or supplier credentials.
 No purchases, publication, supplier contact, customer messages, Fiverr orders,
-or refunds. Mock connectors stay local. The Shopify catalog connector plans a
-GET and does not open it. Human approval is recorded and does not execute a
-consequential action.
+refunds, or fulfillment. Mock connectors stay local. The Shopify catalog
+connector plans a GET. Phase 6 can see whether its credential is configured
+locally and still does not open the connection. Human approval is recorded
+and does not execute a consequential action.

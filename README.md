@@ -9,13 +9,14 @@ agents across three business divisions:
 2. **US Dropshipping Commerce**
 3. **Digital Services / Fiverr Operations**
 
-> **Phase status: READ-ONLY CATALOG CONNECTOR (Phase 5).** Earlier phases remain
-> in place: specs, approval policy, offline research, the review page, and the
-> approval workflow. Phase 5 adds one Shopify catalog connector that can describe
-> a GET of products. It does **not** open that connection. Publishing, purchasing,
-> supplier contact, messaging, orders, refunds, payments, and every other
-> consequential action stay gated. Do not connect `SHOPIFY_ADMIN_TOKEN` without
-> human approval, and do not start Phase 6 without human approval.
+> **Phase status: CATALOG CONNECTION PREPARED (Phase 6).** Earlier phases remain
+> in place, including the read-only catalog connector and the approval workflow.
+> Phase 6 prepares local configuration for `SHOPIFY_ADMIN_TOKEN` (scope
+> `read_products` only) and `SHOPIFY_STORE_DOMAIN`. It does **not** enable
+> `EXTERNAL_CONNECTIONS_ENABLED`, and it does **not** call the Shopify store.
+> Product edits, publishing, purchasing, supplier contact, messaging, orders,
+> refunds, payments, fulfillment, and advertising stay gated. Do not start the
+> next phase without human approval.
 
 ## Why this design
 
@@ -57,6 +58,7 @@ Phase 2 execution is described in [`docs/PHASE2_ORCHESTRATION.md`](docs/PHASE2_O
 Phase 3 review and research is described in [`docs/PHASE3_REVIEW_RESEARCH.md`](docs/PHASE3_REVIEW_RESEARCH.md).
 Phase 4 approval is described in [`docs/PHASE4_APPROVAL.md`](docs/PHASE4_APPROVAL.md).
 Phase 5 catalog read is described in [`docs/PHASE5_READONLY_CONNECTOR.md`](docs/PHASE5_READONLY_CONNECTOR.md).
+Phase 6 connection preparation is described in [`docs/PHASE6_CATALOG_CONNECTION.md`](docs/PHASE6_CATALOG_CONNECTION.md).
 
 ## Quickstart
 
@@ -91,6 +93,7 @@ grokbot approve demo
 # 7. Show the disconnected Shopify catalog read (no production request)
 grokbot connector status
 grokbot connector demo
+grokbot connector prepare
 
 # 8. Run the test suite
 python -m pytest

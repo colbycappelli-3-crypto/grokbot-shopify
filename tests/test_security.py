@@ -36,7 +36,7 @@ def test_env_example_has_only_placeholder_secrets():
 
 def test_gitignore_protects_secrets():
     gitignore = (REPO_ROOT / ".gitignore").read_text(encoding="utf-8")
-    for needed in (".env", "*.pem", "*.key"):
+    for needed in (".env", ".envrc", "*.pem", "*.key"):
         assert needed in gitignore, f".gitignore must ignore {needed}"
     # but the example file must remain trackable
     assert "!.env.example" in gitignore

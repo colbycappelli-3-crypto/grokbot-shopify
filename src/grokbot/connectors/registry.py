@@ -26,6 +26,11 @@ FORBIDDEN_OPERATIONS = frozenset(
         "create_listing",
         "modify_shopify",
         "connect",
+        "create_product",
+        "edit_product",
+        "payment",
+        "fulfillment",
+        "advertising",
     }
 )
 

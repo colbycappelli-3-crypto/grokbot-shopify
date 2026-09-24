@@ -131,13 +131,16 @@ Phase 4 is the **human approval workflow**: a proposed consequential action is
 presented to the owner, an explicit approve or reject decision is recorded, and
 only a classified approval advances the action to a withheld-execution gate.
 Phase 5 adds one **read-only Shopify catalog connector**. It names
-`SHOPIFY_ADMIN_TOKEN` (scope `read_products`) and `SHOPIFY_STORE_DOMAIN`, and
-it does not connect them.
+`SHOPIFY_ADMIN_TOKEN` (scope `read_products`) and `SHOPIFY_STORE_DOMAIN`.
+Phase 6 prepares that credential in the process environment and still does
+not enable the connection.
 
 Do NOT connect production Shopify, Fiverr, supplier, or payment credentials.
 Do NOT purchase, publish, advertise, contact suppliers, message Fiverr users,
-place Fiverr orders, issue refunds, or make financial commitments. Do NOT add
-real credentials. Do NOT start Phase 6 without explicit human approval.
+place Fiverr orders, issue refunds, fulfill orders, or make financial
+commitments. Do NOT add real credentials. Do NOT enable
+`EXTERNAL_CONNECTIONS_ENABLED` or start the next phase without explicit human
+approval.
 Unclassified and prohibited actions stay blocked. A recorded approval still
 does not execute a consequential action.
 
