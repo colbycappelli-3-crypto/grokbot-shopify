@@ -23,4 +23,6 @@ An approved action advances only to the `execution_withheld` gate.
 
 The historical block code `phase_2_offline_no_consequential_actions` still refuses execution after approval.
 
-Do not begin Phase 5, and do not add production credentials, without explicit human approval.
+Phase 5 names a disconnected Shopify catalog read. See
+[`PHASE5_READONLY_CONNECTOR.md`](PHASE5_READONLY_CONNECTOR.md). Do not connect
+that credential without explicit human approval.

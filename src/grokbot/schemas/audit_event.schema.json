@@ -30,7 +30,8 @@
         "action_proposed",
         "action_decision",
         "gate_advanced",
-        "execution_withheld"
+        "execution_withheld",
+        "connector_queried"
       ]
     },
     "details": { "type": "object" }

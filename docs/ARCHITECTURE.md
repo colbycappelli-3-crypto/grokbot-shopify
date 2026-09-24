@@ -47,7 +47,7 @@ this phase.
 | Validation gates | `src/grokbot/gates/` + `config/validation_gates.yaml` | Configurable screening rules with machine-readable failure reasons. |
 | Dossier | `src/grokbot/dossier/` | Aggregated opportunity dossier. Negative evidence stays visible. |
 | Audit log | `src/grokbot/audit/` | Structured events for projects, jobs, evidence, gates, stops, and approvals. |
-| Connectors | `src/grokbot/connectors/` | Read-only research interfaces. Shipped connectors are mocks. |
+| Connectors | `src/grokbot/connectors/` | Mock research interfaces plus one disconnected Shopify catalog GET. |
 | Human review | `src/grokbot/review/` | Local review queue and a GET-only HTML page. Decisions do not execute. |
 | Action approval | `src/grokbot/approval/` | Proposed consequential actions, explicit decisions, and a withheld-execution gate. |
 | CLI | `src/grokbot/cli.py` | `validate`, `plan`, `simulate`, `research`, and `review`. |
@@ -107,5 +107,6 @@ engine.
 
 No production Shopify, Fiverr, payment, advertising, or supplier credentials.
 No purchases, publication, supplier contact, customer messages, Fiverr orders,
-or refunds. Research connectors are read-only or mocked. Human approval is
-recorded and does not execute a consequential action.
+or refunds. Mock connectors stay local. The Shopify catalog connector plans a
+GET and does not open it. Human approval is recorded and does not execute a
+consequential action.

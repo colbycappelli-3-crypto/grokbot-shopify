@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://grokbot.commerce/schemas/connector_result.schema.json",
   "title": "GROKBOT Connector Result",
-  "description": "Local result of a read-only connector call. External execution is always false.",
+  "description": "Local result of a read-only connector call. External execution, credential use, and production connection are always false.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -22,7 +22,9 @@
     "local_read",
     "payload",
     "evidence_records",
-    "unknowns"
+    "unknowns",
+    "credential_needed",
+    "connection_status"
   ],
   "properties": {
     "connector_id": { "type": "string", "minLength": 1 },
@@ -41,6 +43,20 @@
     "local_read": { "type": "boolean" },
     "payload": { "type": ["object", "null"] },
     "evidence_records": { "type": "array", "items": { "type": "object" } },
-    "unknowns": { "type": "array", "items": { "type": "string" } }
+    "unknowns": { "type": "array", "items": { "type": "string" } },
+    "credential_needed": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "env_vars": { "type": "array", "items": { "type": "string" } },
+        "scope": { "type": "string" },
+        "api": { "type": "string" },
+        "method": { "type": "string" },
+        "host_placeholder": { "type": "string" },
+        "path": { "type": "string" }
+      }
+    },
+    "connection_status": { "type": "string", "const": "not_connected" }
   }
 }

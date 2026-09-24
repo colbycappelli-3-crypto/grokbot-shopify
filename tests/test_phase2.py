@@ -545,10 +545,13 @@ def test_phase2_modules_do_not_import_network_clients():
     from pathlib import Path
 
     banned = ("import requests", "import httpx", "import urllib.request", "import socket")
+    urllib_allowed = {"shopify_read.py"}
     root = Path(__file__).resolve().parents[1] / "src" / "grokbot"
     for path in root.rglob("*.py"):
         text = path.read_text(encoding="utf-8")
         for item in banned:
+            if item == "import urllib.request" and path.name in urllib_allowed:
+                continue
             assert item not in text, f"{path} contains {item}"
 
 

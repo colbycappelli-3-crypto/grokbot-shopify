@@ -26,18 +26,21 @@ def _research(packet_id, queue=None):
 
 
 def test_phase_keeps_external_connections_disabled():
-    assert PHASE == "phase_4_approval_workflow"
+    assert PHASE == "phase_5_readonly_connector"
     assert EXTERNAL_CONNECTIONS_ENABLED is False
 
 
 def test_connectors_are_mock_or_read_only_and_forbid_external_operations():
     registry = ConnectorRegistry.load()
-    assert len(registry) == 4
+    assert len(registry) == 5
     for spec in registry.specs.values():
         assert spec["mode"] in {"mock", "read_only"}
         assert spec["access"] == "read_only"
-        assert spec["credentials_required"] is False
         assert spec["production_connected"] is False
+        if spec["id"] == "shopify_catalog_read":
+            assert spec["credentials_required"] is True
+        else:
+            assert spec["credentials_required"] is False
     refused = registry.execute("mock_market_signals", "purchase", "pod-shirt-ready")
     assert refused["refused"] is True
     assert refused["executed"] is False

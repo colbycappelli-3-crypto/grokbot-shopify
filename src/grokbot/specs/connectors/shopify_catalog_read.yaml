@@ -1,0 +1,36 @@
+id: shopify_catalog_read
+name: Shopify Catalog Read
+version: 0.5.0
+mode: read_only
+access: read_only
+divisions: [shared, print_on_demand, us_dropshipping]
+operations_allowed: [search, describe]
+operations_forbidden:
+  - publish
+  - purchase
+  - create_order
+  - place_order
+  - send_message
+  - refund
+  - launch_store
+  - contact_supplier
+  - update_product
+  - create_listing
+  - modify_shopify
+  - connect
+credentials_required: true
+production_connected: false
+credential:
+  name: Shopify Admin API access token
+  env_vars:
+    - SHOPIFY_STORE_DOMAIN
+    - SHOPIFY_ADMIN_TOKEN
+  scope: read_products
+  api: Shopify Admin API
+  method: GET
+  path: /admin/api/2024-10/products.json
+description: >-
+  Read-only Shopify Admin catalog interface. It names the credential required
+  for a later GET of products and does not connect. Search and describe return
+  UNKNOWN until a human approves that connection. Publish, purchase, and every
+  other write stay forbidden.

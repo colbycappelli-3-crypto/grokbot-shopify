@@ -47,6 +47,8 @@ def _base(
     evidence_records,
     unknowns,
     local_read: bool,
+    credential_needed=None,
+    connection_status: str = "not_connected",
 ) -> dict:
     result = {
         "connector_id": connector_id,
@@ -66,6 +68,8 @@ def _base(
         "payload": payload,
         "evidence_records": list(evidence_records or []),
         "unknowns": list(unknowns or []),
+        "credential_needed": credential_needed,
+        "connection_status": connection_status,
     }
     validate(result, "connector_result", source=f"connector:{connector_id}")
     return result
@@ -193,6 +197,10 @@ class ConnectorRegistry:
             )
         if operation not in set(spec.get("operations_allowed") or []):
             return _refusal(connector_id, operation, query_id)
+        if spec["id"] == "shopify_catalog_read":
+            from .shopify_read import ShopifyCatalogReadConnector
+
+            return ShopifyCatalogReadConnector().execute(operation, query_id)
         if spec["mode"] != "mock":
             return UnconfiguredReadOnlyConnector().execute(operation, query_id)
         mock = self.mocks.get(connector_id) or {}
@@ -237,10 +245,24 @@ def _check_spec(spec: dict, path: Path) -> None:
         raise ConnectorError(f"{path}: mode must be mock or read_only.")
     if spec["access"] != "read_only":
         raise ConnectorError(f"{path}: access must be read_only.")
-    if spec.get("credentials_required"):
-        raise ConnectorError(f"{path}: credentials are not allowed in this phase.")
     if spec.get("production_connected"):
         raise ConnectorError(f"{path}: production connections are not allowed in this phase.")
+    if spec["mode"] == "mock" and spec.get("credentials_required"):
+        raise ConnectorError(f"{path}: mock connectors cannot require credentials.")
+    if spec.get("credentials_required"):
+        if spec["mode"] != "read_only" or spec["id"] != "shopify_catalog_read":
+            raise ConnectorError(f"{path}: only the disconnected Shopify catalog read may name a credential.")
+        credential = spec.get("credential") or {}
+        if credential.get("env_vars") != ["SHOPIFY_STORE_DOMAIN", "SHOPIFY_ADMIN_TOKEN"]:
+            raise ConnectorError(f"{path}: credential env vars must be the Shopify catalog pair.")
+        if credential.get("scope") != "read_products" or credential.get("method") != "GET":
+            raise ConnectorError(f"{path}: the catalog credential is limited to GET read_products.")
+        blob = str(spec)
+        for marker in ("shpat_", "shpss_", "shpca_", "shppa_", "sk_live_", "sk_test_", "ghp_", "xox", "AKIA"):
+            if marker in blob:
+                raise ConnectorError(f"{path}: connector spec contains a secret value.")
+    elif spec.get("credential"):
+        raise ConnectorError(f"{path}: a credential block requires credentials_required.")
     allowed = set(spec.get("operations_allowed") or [])
     forbidden = set(spec.get("operations_forbidden") or [])
     if not allowed or not allowed <= ALLOWED_OPERATIONS:
