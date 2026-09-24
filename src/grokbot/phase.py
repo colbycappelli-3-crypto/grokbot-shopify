@@ -1,16 +1,14 @@
-"""Phase 4 execution boundary.
+"""Phase 5 execution boundary.
 
-A human owner can be shown a proposed consequential action and can approve or
-reject it. Approval advances that action only as far as a withheld-execution
-gate. This phase still does not publish, purchase, contact, message, order,
-refund, or spend.
+A Shopify catalog connector can describe the read it would perform. It does
+not open that connection. Approval gates still stop every consequential action.
 
 The historical block code ``phase_2_offline_no_consequential_actions`` is
 unchanged so earlier workflows keep the same fail-safe.
 """
 from __future__ import annotations
 
-PHASE = "phase_4_approval_workflow"
+PHASE = "phase_5_readonly_connector"
 EXTERNAL_CONNECTIONS_ENABLED = False
 
 # Action categories that would change the outside world. This phase never

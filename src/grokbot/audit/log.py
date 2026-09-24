@@ -32,6 +32,7 @@ AUDIT_EVENT_TYPES = (
     "action_decision",
     "gate_advanced",
     "execution_withheld",
+    "connector_queried",
 )
 
 _SECRET_KEY = re.compile(

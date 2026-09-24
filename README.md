@@ -9,14 +9,13 @@ agents across three business divisions:
 2. **US Dropshipping Commerce**
 3. **Digital Services / Fiverr Operations**
 
-> **Phase status: HUMAN APPROVAL WORKFLOW (Phase 4).** Earlier phases remain
-> in place: specs, approval policy, offline research, and the read-only review
-> page. Phase 4 presents proposed consequential actions, records an explicit
-> approve or reject decision, and lets an approved action advance only to a
-> withheld-execution gate. It does **not** connect production credentials,
-> publish, purchase, contact suppliers, message users, place orders, issue
-> refunds, or make financial commitments. Do not start Phase 5 without human
-> approval.
+> **Phase status: READ-ONLY CATALOG CONNECTOR (Phase 5).** Earlier phases remain
+> in place: specs, approval policy, offline research, the review page, and the
+> approval workflow. Phase 5 adds one Shopify catalog connector that can describe
+> a GET of products. It does **not** open that connection. Publishing, purchasing,
+> supplier contact, messaging, orders, refunds, payments, and every other
+> consequential action stay gated. Do not connect `SHOPIFY_ADMIN_TOKEN` without
+> human approval, and do not start Phase 6 without human approval.
 
 ## Why this design
 
@@ -41,14 +40,14 @@ src/grokbot/
   audit/                    Structured audit log
   dossier/                  Opportunity dossier builder
   fixtures/                 TEST/MOCK opportunity packets and research packets
-  connectors/               Read-only connector interfaces and TEST/MOCK payloads
+  connectors/               Mock connectors plus one disconnected Shopify catalog read
   review/                   Human review queue and read-only HTML page
   state/                    Project/store state (auditable)
   schemas/                  Shared JSON schemas (contracts)
   specs/agents/             Agent specifications (data)
   specs/workflows/          Workflow specifications (data)
   specs/connectors/         Read-only connector specifications (data)
-  cli.py                    `grokbot validate` / `plan` / `simulate` / `research` / `review`
+  cli.py                    `grokbot validate` / `plan` / `simulate` / `research` / `review` / `approve` / `connector`
 tests/                      Schema, registry, workflow, policy, state, orchestrator, security tests
 .env.example                Placeholders only — never commit real secrets
 ```
@@ -57,6 +56,7 @@ Start with [`docs/MASTER_OPERATING_DOCUMENT.md`](docs/MASTER_OPERATING_DOCUMENT.
 Phase 2 execution is described in [`docs/PHASE2_ORCHESTRATION.md`](docs/PHASE2_ORCHESTRATION.md).
 Phase 3 review and research is described in [`docs/PHASE3_REVIEW_RESEARCH.md`](docs/PHASE3_REVIEW_RESEARCH.md).
 Phase 4 approval is described in [`docs/PHASE4_APPROVAL.md`](docs/PHASE4_APPROVAL.md).
+Phase 5 catalog read is described in [`docs/PHASE5_READONLY_CONNECTOR.md`](docs/PHASE5_READONLY_CONNECTOR.md).
 
 ## Quickstart
 
@@ -88,7 +88,11 @@ grokbot review render --output /tmp/grokbot-review.html
 # 6. Demonstrate the approval workflow on TEST/MOCK research (nothing is executed)
 grokbot approve demo
 
-# 7. Run the test suite
+# 7. Show the disconnected Shopify catalog read (no production request)
+grokbot connector status
+grokbot connector demo
+
+# 8. Run the test suite
 python -m pytest
 ```
 
@@ -107,7 +111,7 @@ python -m pytest
 | Approval policy | Owner-editable mapping of action categories to AUTONOMOUS / APPROVAL_REQUIRED / PROHIBITED. | `approval_policy.schema.json` |
 | Validation gates | Owner-editable default thresholds for offline screening. | `validation_gates.schema.json` |
 | Opportunity fixture | TEST/MOCK packet used by offline simulations. | `opportunity_fixture.schema.json` |
-| Research connector | Read-only or mock interface. Credentials and production connections are refused. | `research_connector.schema.json` |
+| Research connector | Mock interface, or the disconnected Shopify catalog GET. Production connections stay closed. | `research_connector.schema.json` |
 | Research packet | TEST/MOCK connector queries for a division research workflow. | `research_packet.schema.json` |
 | Review item | Human review queue record. A decision never executes an external action. | `review_item.schema.json` |
 

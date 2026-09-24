@@ -6,7 +6,7 @@ credentials, and starts no autonomous processes.
 """
 from __future__ import annotations
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 from .agents.registry import AgentRegistry, AgentSpec
 from .orchestrator.orchestrator import Orchestrator, Plan, PlannedTask

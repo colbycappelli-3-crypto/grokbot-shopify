@@ -43,3 +43,6 @@ jobs:
 
       - name: Demonstrate the mock approval workflow
         run: python -m grokbot approve demo
+
+      - name: Demonstrate the read-only Shopify catalog connector
+        run: python -m grokbot connector demo

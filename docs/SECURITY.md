@@ -37,8 +37,13 @@ and supplier-contact operations. Consequential categories (store launch,
 purchase, supplier commitment, publication, advertising, customer messages,
 Fiverr orders, Fiverr contact, Shopify production changes) stay blocked even
 if a human approval is recorded. Phase 4 can record that approval and advance
-the action only to a withheld-execution gate. Unclassified categories stay
-blocked by the policy default. Prohibited categories still cannot be relaxed.
+the action only to a withheld-execution gate. Phase 5 can describe one GET of
+the Shopify product catalog. The credential it needs is `SHOPIFY_ADMIN_TOKEN`
+with scope `read_products`, plus `SHOPIFY_STORE_DOMAIN`. Those values stay out
+of the repository. The connector does not read them into a request, including
+when they are present in the process environment, until a human approves the
+connection. Unclassified categories stay blocked by the policy default.
+Prohibited categories still cannot be relaxed.
 
 ## Prohibited actions (never permitted)
 
